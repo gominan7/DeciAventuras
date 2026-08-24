@@ -19,7 +19,7 @@ class SettingsViewModel(
         .map { it.hapticsEnabled }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+            started = SharingStarted.Eagerly,
             initialValue = true,
         )
 
@@ -27,7 +27,7 @@ class SettingsViewModel(
         .map { it.soundEnabled }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+            started = SharingStarted.Eagerly,
             initialValue = true,
         )
 
