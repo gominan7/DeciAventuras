@@ -91,7 +91,7 @@ private fun DashboardHeader(completedCount: Int, totalCount: Int) {
         val progress = if (totalCount == 0) 0f else completedCount.toFloat() / totalCount.toFloat()
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(10.dp))
         LinearProgressIndicator(
-            progress = progress,
+            progress = {progress},
             modifier = Modifier.fillMaxWidth().height(10.dp).clip(RoundedCornerShape(50)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.primaryContainer,

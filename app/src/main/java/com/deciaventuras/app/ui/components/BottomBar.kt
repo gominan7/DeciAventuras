@@ -23,7 +23,7 @@ fun DeciAventurasBottomBar(
         NavigationBarItem(
             selected = selectedTab == DeciAventurasTab.MAP,
             onClick = onSelectMap,
-            icon = { Icon(Icons.Filled.Explore, contentDescription = null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_map)) },
         )
         NavigationBarItem(
