@@ -62,6 +62,22 @@ class EntityMappingTest {
     }
 
     @Test
+    fun `UserProgress con reflexion tambien sobrevive el viaje de ida y vuelta`() {
+        val original = UserProgress(
+            id = 8,
+            dilemmaId = 1,
+            chosenChoiceId = 2,
+            timestampMillis = 1_700_000_000_000,
+            reflection = "Aprendí que guardar un poco de plata sirve para toda la semana.",
+        )
+
+        val roundTripped = original.toEntity().toDomain()
+
+        assertThat(roundTripped).isEqualTo(original)
+        assertThat(roundTripped.reflection).isNotNull()
+    }
+
+    @Test
     fun `UserPreferences sobrevive el viaje de ida y vuelta a Entity`() {
         val original = UserPreferences(
             alias = "Explorador07",

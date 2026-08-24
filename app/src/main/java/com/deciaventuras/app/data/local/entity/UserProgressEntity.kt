@@ -7,8 +7,10 @@ import androidx.room.PrimaryKey
 import com.deciaventuras.app.domain.model.UserProgress
 
 /**
- * Registro histórico append-only de cada decisión tomada por el niño.
- * Nunca se actualiza ni se borra desde la app: es el "Diario" real.
+ * Registro histórico append-only de cada decisión tomada por el niño (nunca
+ * se borra desde la app). La única actualización permitida es adjuntar la
+ * reflexión propia del niño después de resolver el dilema — el resto de
+ * los campos son inmutables una vez insertados.
  */
 @Entity(
     tableName = "user_progress",
@@ -33,6 +35,7 @@ data class UserProgressEntity(
     val dilemmaId: Int,
     val chosenChoiceId: Int,
     val timestampMillis: Long,
+    val reflection: String? = null,
 )
 
 fun UserProgressEntity.toDomain(): UserProgress = UserProgress(
@@ -40,6 +43,7 @@ fun UserProgressEntity.toDomain(): UserProgress = UserProgress(
     dilemmaId = dilemmaId,
     chosenChoiceId = chosenChoiceId,
     timestampMillis = timestampMillis,
+    reflection = reflection,
 )
 
 fun UserProgress.toEntity(): UserProgressEntity = UserProgressEntity(
@@ -47,4 +51,5 @@ fun UserProgress.toEntity(): UserProgressEntity = UserProgressEntity(
     dilemmaId = dilemmaId,
     chosenChoiceId = chosenChoiceId,
     timestampMillis = timestampMillis,
+    reflection = reflection,
 )

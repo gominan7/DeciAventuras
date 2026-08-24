@@ -10,12 +10,14 @@ específico en `APP_PROMPT.md`.
 
 ## Estado actual del proyecto
 
-🟢 **Paso 4/7: Onboarding + Ajustes agregados sobre una base ya confirmada funcionando.**
+🟢 **Paso 5/7: Reflexión propia del niño en el Diario, sobre una base confirmada funcionando en dispositivo real.**
 
-El proyecto **compila y corre de verdad**: se probó en GitHub Actions (build
-en verde) y en un dispositivo Android real, incluyendo el Mapa de Aventuras,
-el Simulador con Drag & Drop, y el Diario de Explorador. Ver la sección de
-abajo para el detalle de qué se verificó y qué no.
+Nuevo en esta tanda: al terminar un dilema, el niño puede escribir
+opcionalmente qué aprendió ("¿Qué aprendiste de esta decisión?"), y esa
+reflexión queda guardada junto a la decisión en el Diario de Explorador —
+no reemplaza el texto fijo de Impacto Inmediato/Destino Final, se suma
+como una nota propia. Es 100% opcional: si no escribe nada, todo sigue
+funcionando exactamente igual que antes.
 
 Lo que existe ya en este repositorio:
 
@@ -33,11 +35,12 @@ Lo que existe ya en este repositorio:
 - Gradle Wrapper 8.7 real (jar/scripts oficiales, no simulados).
 - Workflow de GitHub Actions (`.github/workflows/build.yml`) que compila,
   testea, lintea y publica el APK de depuración en cada push a `main`.
-- **Modelo Room v2**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema, `CASCADE`),
+- **Modelo Room v3**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema, `CASCADE`),
   `UserProgressEntity` (FK → dilema y decisión, `CASCADE`, historial
-  *append-only*), y **`UserPreferencesEntity`** nueva (tabla de una sola
-  fila: alias, avatar, vibración, onboarding completado). Migración
-  destructiva documentada (aceptable en esta etapa pre-release, no en producción).
+  *append-only* salvo por la columna `reflection`, la única actualizable),
+  y `UserPreferencesEntity` (tabla de una sola fila: alias, avatar,
+  vibración, onboarding completado). Migración destructiva documentada
+  (aceptable en esta etapa pre-release, no en producción).
 - **Los 5 dilemas semilla completos**, cada uno con 3 tarjetas de decisión
   reales, espejadas en `database/sample_data.sql`.
 - **Dominio puro y testeable**: `RecordChoiceUseCase` (guarda decisión →
@@ -58,23 +61,25 @@ Lo que existe ya en este repositorio:
   - `DashboardScreen` — Mapa de Aventuras: camino serpenteante de nodos con
     estado real y progreso derivado de los datos; ícono de Ajustes en el header.
   - `SimulatorScreen` — situación → drag & drop → Impacto Inmediato +
-    Destino Final → insignia ganada.
-  - `JournalScreen` — insignias coleccionables + historial, estado vacío ilustrado.
+    Destino Final → insignia ganada → reflexión propia opcional.
+  - `JournalScreen` — insignias coleccionables + historial (con la
+    reflexión del niño destacada cuando la escribió), estado vacío ilustrado.
   - `SettingsScreen` — vibración (real) + reiniciar todo el progreso (con
     confirmación). Se dejó afuera a propósito un toggle de "sonido de
     efectos": la app no reproduce audio todavía, ese control sería decorativo.
 - **ViewModels** conectados vía `viewModelFactory{}` (sin Hilt/Dagger).
-- **60 tests** (JUnit4 + Truth): 41 unitarios (dominio, seed data, mappers,
-  ViewModels, `ResetProgressUseCase`, con `MainDispatcherRule` +
+- **67 tests** (JUnit4 + Truth): 45 unitarios (dominio, seed data, mappers,
+  ViewModels, `ResetProgressUseCase`, reflexión, con `MainDispatcherRule` +
   `FakeDilemmaRepository`/`FakeUserPreferencesRepository`, sin Robolectric)
-  + 19 instrumentados sobre Room real en memoria.
+  + 22 instrumentados sobre Room real en memoria.
 
 Lo que **todavía no existe**:
 
 - [ ] Documentación (`docs/MEMORIA_DESCRIPTIVA.md`, manuales, `BUILD_REPORT.md`) — siguiente paso.
-- [ ] Verificación en dispositivo real de ESTA tanda (Onboarding/Ajustes):
-      pasó la misma auditoría manual que el resto, pero todavía no se probó
-      corriendo, a diferencia del Mapa/Simulador/Diario que sí están confirmados.
+- [ ] Verificación en dispositivo real de la reflexión en el Diario (Paso 5):
+      pasó la misma auditoría manual de siempre, pero todavía no se probó
+      corriendo, a diferencia del Mapa/Simulador/Diario/Onboarding/Ajustes
+      que ya están confirmados funcionando.
 
 ## ⚠️ Compilación: verificada en GitHub Actions y dispositivo real (con una salvedad)
 

@@ -12,6 +12,8 @@ data class UserProgress(
     val dilemmaId: Int,
     val chosenChoiceId: Int,
     val timestampMillis: Long,
+    /** La reflexión propia del niño, escrita opcionalmente al terminar el dilema. */
+    val reflection: String? = null,
 )
 
 /**

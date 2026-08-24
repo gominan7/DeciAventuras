@@ -24,4 +24,8 @@ interface UserProgressDao {
     /** Usado únicamente por el reinicio de progreso desde Ajustes (Sección "Reiniciar todo el progreso"). */
     @Query("DELETE FROM user_progress")
     suspend fun deleteAll()
+
+    /** Adjunta la reflexión que el niño escribió al terminar el dilema (opcional). */
+    @Query("UPDATE user_progress SET reflection = :reflection WHERE id = :progressId")
+    suspend fun updateReflection(progressId: Int, reflection: String)
 }

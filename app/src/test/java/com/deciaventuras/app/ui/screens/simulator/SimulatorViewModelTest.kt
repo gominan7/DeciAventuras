@@ -62,4 +62,49 @@ class SimulatorViewModelTest {
         assertThat(viewModel.uiState.value.resultChoice?.id).isEqualTo(1)
         assertThat(repository.observeProgress().first()).hasSize(1)
     }
+
+    @Test
+    fun `soltar una tarjeta guarda el id de progreso para poder adjuntarle una reflexion`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
+        val chosen = viewModel.uiState.value.choices.first { it.id == 1 }
+
+        viewModel.onChoiceDropped(chosen)
+
+        assertThat(viewModel.uiState.value.savedProgressId).isNotNull()
+    }
+
+    @Test
+    fun `escribir una reflexion y continuar la adjunta a la decision guardada`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
+        val chosen = viewModel.uiState.value.choices.first { it.id == 1 }
+        viewModel.onChoiceDropped(chosen)
+        var onDoneCalled = false
+
+        viewModel.saveReflectionAndContinue("Aprendí a guardar mi plata.") { onDoneCalled = true }
+
+        assertThat(onDoneCalled).isTrue()
+        val savedEntry = repository.observeProgress().first().single()
+        assertThat(savedEntry.reflection).isEqualTo("Aprendí a guardar mi plata.")
+    }
+
+    @Test
+    fun `continuar sin escribir ninguna reflexion no falla y no guarda nada (es opcional)`() = runTest {
+        // Caso límite (Sección 29 del spec maestro): campo de texto vacío.
+        val repository = FakeDilemmaRepository()
+        val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
+        val chosen = viewModel.uiState.value.choices.first { it.id == 1 }
+        viewModel.onChoiceDropped(chosen)
+        var onDoneCalled = false
+
+        viewModel.saveReflectionAndContinue("   ") { onDoneCalled = true }
+
+        assertThat(onDoneCalled).isTrue()
+        val savedEntry = repository.observeProgress().first().single()
+        assertThat(savedEntry.reflection).isNull()
+    }
 }

@@ -10,6 +10,7 @@ import com.deciaventuras.app.domain.usecase.RecordChoiceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class SimulatorUiState(
@@ -19,6 +20,8 @@ data class SimulatorUiState(
     val resultChoice: Choice? = null,
     val isLoading: Boolean = true,
     val hapticsEnabled: Boolean = true,
+    /** Id de la fila de progreso recién guardada, para poder adjuntarle la reflexión del niño. */
+    val savedProgressId: Int? = null,
 ) {
     val isShowingResult: Boolean get() = resultChoice != null
 }
@@ -67,6 +70,36 @@ class SimulatorViewModel(
         _uiState.value = _uiState.value.copy(resultChoice = choice)
         viewModelScope.launch {
             recordChoiceUseCase(dilemmaId = dilemmaId, choiceId = choice.id)
+
+            // RecordChoiceUseCase no expone el id de la fila que insertó (no
+            // es su responsabilidad); se busca la entrada recién guardada
+            // que coincide con este dilema y esta decisión, quedándose con
+            // la más reciente por si es una repetición (rejugar un dilema
+            // ya completado).
+            val progressId = repository.observeProgress().first()
+                .filter { it.dilemmaId == dilemmaId && it.chosenChoiceId == choice.id }
+                .maxByOrNull { it.timestampMillis }
+                ?.id
+
+            _uiState.value = _uiState.value.copy(savedProgressId = progressId)
+        }
+    }
+
+    /**
+     * Se llama al presionar "Guardar en mi Diario y Continuar". Si el niño
+     * escribió una reflexión, se adjunta a la decisión ya guardada; si la
+     * dejó vacía, simplemente se continúa (la reflexión es siempre opcional).
+     */
+    fun saveReflectionAndContinue(reflection: String, onDone: () -> Unit) {
+        val progressId = _uiState.value.savedProgressId
+        val trimmed = reflection.trim()
+        if (progressId != null && trimmed.isNotEmpty()) {
+            viewModelScope.launch {
+                repository.updateReflection(progressId, trimmed)
+                onDone()
+            }
+        } else {
+            onDone()
         }
     }
 }

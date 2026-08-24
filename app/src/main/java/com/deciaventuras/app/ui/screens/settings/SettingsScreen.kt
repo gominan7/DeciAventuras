@@ -141,4 +141,3 @@ fun SettingsScreen(onBack: () -> Unit, onProgressReset: () -> Unit) {
         )
     }
 }
-

@@ -61,4 +61,10 @@ class FakeDilemmaRepository(
         progressFlow.value = emptyList()
         dilemmasFlow.value = originalSeedDilemmas
     }
+
+    override suspend fun updateReflection(progressId: Int, reflection: String) {
+        progressFlow.value = progressFlow.value.map {
+            if (it.id == progressId) it.copy(reflection = reflection) else it
+        }
+    }
 }

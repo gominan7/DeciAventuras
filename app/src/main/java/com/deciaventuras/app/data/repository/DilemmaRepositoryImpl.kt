@@ -46,6 +46,10 @@ class DilemmaRepositoryImpl(
         dilemmaDao.setUnlocked(dilemmaId, isUnlocked)
     }
 
+    override suspend fun updateReflection(progressId: Int, reflection: String) {
+        userProgressDao.updateReflection(progressId, reflection)
+    }
+
     override suspend fun resetAllProgress() {
         userProgressDao.deleteAll()
         // OnConflictStrategy.REPLACE sobrescribe cada fila con los valores

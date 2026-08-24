@@ -21,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backpack
@@ -37,6 +39,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -165,7 +168,12 @@ fun SimulatorScreen(
                 modifier = Modifier.align(Alignment.BottomCenter),
             ) {
                 uiState.resultChoice?.let { choice ->
-                    ResultPanel(choice = choice, onContinue = onFinished)
+                    ResultPanel(
+                        choice = choice,
+                        onContinue = { reflection ->
+                            viewModel.saveReflectionAndContinue(reflection, onFinished)
+                        },
+                    )
                 }
             }
         }
@@ -245,7 +253,9 @@ private fun SituationCard(dilemma: Dilemma, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ResultPanel(choice: Choice, onContinue: () -> Unit) {
+private fun ResultPanel(choice: Choice, onContinue: (reflection: String) -> Unit) {
+    var reflection by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -253,6 +263,7 @@ private fun ResultPanel(choice: Choice, onContinue: () -> Unit) {
                 color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
             )
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
     ) {
         EffectRow(
@@ -280,9 +291,23 @@ private fun ResultPanel(choice: Choice, onContinue: () -> Unit) {
             ExplorerBadge(traitName = choice.personalityTrait)
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "¿Qué aprendiste de esta decisión? (opcional)",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = reflection,
+            onValueChange = { if (it.length <= MAX_REFLECTION_LENGTH) reflection = it },
+            placeholder = { Text("Escribí lo que quieras acá...") },
+            modifier = Modifier.fillMaxWidth().height(90.dp),
+        )
+
         Spacer(modifier = Modifier.height(18.dp))
         Button(
-            onClick = onContinue,
+            onClick = { onContinue(reflection) },
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -290,6 +315,8 @@ private fun ResultPanel(choice: Choice, onContinue: () -> Unit) {
         }
     }
 }
+
+private const val MAX_REFLECTION_LENGTH = 200
 
 @Composable
 private fun EffectRow(icon: ImageVector, label: String, text: String, accent: androidx.compose.ui.graphics.Color) {

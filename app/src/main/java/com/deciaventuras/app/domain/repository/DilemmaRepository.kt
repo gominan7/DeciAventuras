@@ -37,6 +37,9 @@ interface DilemmaRepository {
 
     suspend fun setDilemmaUnlocked(dilemmaId: Int, isUnlocked: Boolean)
 
+    /** Adjunta la reflexión propia del niño a una decisión ya guardada. */
+    suspend fun updateReflection(progressId: Int, reflection: String)
+
     /**
      * Borra todo el historial de decisiones y vuelve los 5 dilemas a su
      * estado inicial (solo el primero desbloqueado, ninguno completado).

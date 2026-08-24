@@ -83,4 +83,34 @@ class UserProgressDaoTest {
     fun insert_conChoiceIdInexistente_violaLaClaveForanea() = runBlocking {
         progressDao.insert(UserProgressEntity(dilemmaId = 1, chosenChoiceId = 999, timestampMillis = 1_000))
     }
+
+    @Test
+    fun nuevoRegistroDeProgreso_empiezaSinReflexion() = runBlocking {
+        progressDao.insert(UserProgressEntity(dilemmaId = 1, chosenChoiceId = 1, timestampMillis = 1_000))
+
+        val entry = progressDao.observeAll().first().single()
+
+        assertThat(entry.reflection).isNull()
+    }
+
+    @Test
+    fun updateReflection_adjuntaLaReflexionAUnaEntradaExistente() = runBlocking {
+        val id = progressDao.insert(UserProgressEntity(dilemmaId = 1, chosenChoiceId = 1, timestampMillis = 1_000))
+
+        progressDao.updateReflection(id.toInt(), "Aprendí algo importante.")
+
+        val entry = progressDao.observeAll().first().single()
+        assertThat(entry.reflection).isEqualTo("Aprendí algo importante.")
+    }
+
+    @Test
+    fun updateReflection_conIdInexistente_noModificaNadaYNoFalla() = runBlocking {
+        // Caso límite: UPDATE sobre un id que no existe no debe lanzar error.
+        progressDao.insert(UserProgressEntity(dilemmaId = 1, chosenChoiceId = 1, timestampMillis = 1_000))
+
+        progressDao.updateReflection(9999, "Esto no debería guardarse en ningún lado")
+
+        val entry = progressDao.observeAll().first().single()
+        assertThat(entry.reflection).isNull()
+    }
 }
