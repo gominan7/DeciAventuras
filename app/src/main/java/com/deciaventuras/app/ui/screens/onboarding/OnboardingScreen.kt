@@ -2,8 +2,6 @@ package com.deciaventuras.app.ui.screens.onboarding
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,20 +42,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.deciaventuras.app.di.rememberAppContainer
+import com.deciaventuras.app.ui.components.AVATAR_COLORS
 import com.deciaventuras.app.ui.components.CompassDropZone
-import com.deciaventuras.app.ui.theme.FireOrange
-import com.deciaventuras.app.ui.theme.FireOrangeDark
-import com.deciaventuras.app.ui.theme.JungleGreen
-import com.deciaventuras.app.ui.theme.JungleGreenDark
-import com.deciaventuras.app.ui.theme.JungleGreenLight
-import com.deciaventuras.app.ui.theme.SkyBlue
-import com.deciaventuras.app.ui.theme.SkyBlueDark
-import com.deciaventuras.app.ui.theme.SkyBlueLight
-
-private val AVATAR_COLORS = listOf(
-    JungleGreen, FireOrange, SkyBlue, JungleGreenDark,
-    FireOrangeDark, SkyBlueDark, JungleGreenLight, SkyBlueLight,
-)
+import com.deciaventuras.app.ui.components.ExplorerAvatar
 
 /**
  * Onboarding de 3 pantallas (dentro del máximo de la Sección 16 del spec
@@ -247,30 +233,15 @@ private fun ProfilePage(
             modifier = Modifier.height(120.dp),
         ) {
             items(AVATAR_COLORS.size) { index ->
-                AvatarCircle(
-                    color = AVATAR_COLORS[index],
+                ExplorerAvatar(
+                    avatarIndex = index,
+                    size = 52.dp,
                     isSelected = index == avatarIndex,
                     onClick = { onAvatarSelected(index) },
                 )
             }
         }
     }
-}
-
-@Composable
-private fun AvatarCircle(color: Color, isSelected: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(52.dp)
-            .clip(CircleShape)
-            .background(color)
-            .border(
-                width = if (isSelected) 3.dp else 0.dp,
-                color = MaterialTheme.colorScheme.onBackground,
-                shape = CircleShape,
-            )
-            .clickable(onClick = onClick),
-    )
 }
 
 @Composable

@@ -10,14 +10,20 @@ específico en `APP_PROMPT.md`.
 
 ## Estado actual del proyecto
 
-🟢 **Paso 5/7: Reflexión propia del niño en el Diario, sobre una base confirmada funcionando en dispositivo real.**
+🟢 **Paso 5/7: Avatar ilustrado + perfil visible en el Mapa, reflexión propia en el Diario — sobre una base confirmada funcionando en dispositivo real.**
 
-Nuevo en esta tanda: al terminar un dilema, el niño puede escribir
-opcionalmente qué aprendió ("¿Qué aprendiste de esta decisión?"), y esa
-reflexión queda guardada junto a la decisión en el Diario de Explorador —
-no reemplaza el texto fijo de Impacto Inmediato/Destino Final, se suma
-como una nota propia. Es 100% opcional: si no escribe nada, todo sigue
-funcionando exactamente igual que antes.
+Dos correcciones reales encontradas por el usuario probando en su celular:
+1. Los "avatares" del onboarding eran simples círculos de color, sin ningún
+   personaje — se reemplazaron por `ExplorerAvatar`, un zorrito ilustrado
+   con Compose Canvas (el personaje guía que ya estaba mencionado en el
+   diseño original de la app y nunca se había usado).
+2. El Mapa de Aventuras nunca mostraba el alias ni el avatar guardados en
+   el Onboarding — el `DashboardViewModel` no leía `UserPreferencesRepository`.
+   Ahora el header del Mapa muestra el avatar + alias reales.
+
+Además, en esta tanda: al terminar un dilema, el niño puede escribir
+opcionalmente qué aprendió, y esa reflexión queda guardada junto a la
+decisión en el Diario de Explorador — es 100% opcional.
 
 Lo que existe ya en este repositorio:
 
@@ -68,10 +74,10 @@ Lo que existe ya en este repositorio:
     confirmación). Se dejó afuera a propósito un toggle de "sonido de
     efectos": la app no reproduce audio todavía, ese control sería decorativo.
 - **ViewModels** conectados vía `viewModelFactory{}` (sin Hilt/Dagger).
-- **67 tests** (JUnit4 + Truth): 45 unitarios (dominio, seed data, mappers,
-  ViewModels, `ResetProgressUseCase`, reflexión, con `MainDispatcherRule` +
-  `FakeDilemmaRepository`/`FakeUserPreferencesRepository`, sin Robolectric)
-  + 22 instrumentados sobre Room real en memoria.
+- **68 tests** (JUnit4 + Truth): 46 unitarios (dominio, seed data, mappers,
+  ViewModels, `ResetProgressUseCase`, reflexión, perfil en el Mapa, con
+  `MainDispatcherRule` + `FakeDilemmaRepository`/`FakeUserPreferencesRepository`,
+  sin Robolectric) + 22 instrumentados sobre Room real en memoria.
 
 Lo que **todavía no existe**:
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import com.deciaventuras.app.domain.model.toState
 import com.deciaventuras.app.ui.components.DeciAventurasBottomBar
 import com.deciaventuras.app.ui.components.DeciAventurasTab
 import com.deciaventuras.app.ui.components.DilemmaMapNode
+import com.deciaventuras.app.ui.components.ExplorerAvatar
 import com.deciaventuras.app.ui.components.MapPathConnector
 
 /**
@@ -53,7 +55,7 @@ fun DashboardScreen(
     val container = rememberAppContainer()
     val viewModel: DashboardViewModel = viewModel(
         factory = viewModelFactory {
-            initializer { DashboardViewModel(container.dilemmaRepository) }
+            initializer { DashboardViewModel(container.dilemmaRepository, container.userPreferencesRepository) }
         },
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,6 +72,8 @@ fun DashboardScreen(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             DashboardHeader(
+                alias = uiState.alias,
+                avatarIndex = uiState.avatarIndex,
                 completedCount = uiState.completedCount,
                 totalCount = uiState.totalCount,
                 onNavigateToSettings = onNavigateToSettings,
@@ -84,24 +88,34 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardHeader(completedCount: Int, totalCount: Int, onNavigateToSettings: () -> Unit) {
+private fun DashboardHeader(
+    alias: String,
+    avatarIndex: Int,
+    completedCount: Int,
+    totalCount: Int,
+    onNavigateToSettings: () -> Unit,
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Mapa de Aventuras",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = "Cada camino que eliges revela un nuevo destino.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                ExplorerAvatar(avatarIndex = avatarIndex, size = 44.dp)
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(
+                        text = alias.ifBlank { "Explorador" },
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = "Mapa de Aventuras",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
@@ -111,6 +125,13 @@ private fun DashboardHeader(completedCount: Int, totalCount: Int, onNavigateToSe
                 )
             }
         }
+
+        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = "Cada camino que eliges revela un nuevo destino.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         val progress = if (totalCount == 0) 0f else completedCount.toFloat() / totalCount.toFloat()
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(10.dp))

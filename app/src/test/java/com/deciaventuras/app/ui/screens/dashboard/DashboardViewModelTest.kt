@@ -2,6 +2,7 @@ package com.deciaventuras.app.ui.screens.dashboard
 
 import com.deciaventuras.app.domain.usecase.RecordChoiceUseCase
 import com.deciaventuras.app.fake.FakeDilemmaRepository
+import com.deciaventuras.app.fake.FakeUserPreferencesRepository
 import com.deciaventuras.app.util.MainDispatcherRule
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -16,7 +17,7 @@ class DashboardViewModelTest {
     @Test
     fun `el estado inicial refleja los 5 dilemas semilla con solo el primero disponible`() = runTest {
         val repository = FakeDilemmaRepository()
-        val viewModel = DashboardViewModel(repository)
+        val viewModel = DashboardViewModel(repository, FakeUserPreferencesRepository())
 
         val state = viewModel.uiState.value
 
@@ -29,7 +30,7 @@ class DashboardViewModelTest {
     @Test
     fun `completar una aventura actualiza el conteo de completadas en el estado`() = runTest {
         val repository = FakeDilemmaRepository()
-        val viewModel = DashboardViewModel(repository)
+        val viewModel = DashboardViewModel(repository, FakeUserPreferencesRepository())
         val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
 
         recordChoice(dilemmaId = 1, choiceId = 1)
@@ -40,10 +41,25 @@ class DashboardViewModelTest {
     @Test
     fun `los dilemas se muestran ordenados por orderIndex sin importar el orden de insercion`() = runTest {
         val repository = FakeDilemmaRepository()
-        val viewModel = DashboardViewModel(repository)
+        val viewModel = DashboardViewModel(repository, FakeUserPreferencesRepository())
 
         val orders = viewModel.uiState.value.dilemmas.map { it.orderIndex }
 
         assertThat(orders).isEqualTo(orders.sorted())
     }
+
+    @Test
+    fun `el alias y el avatar guardados en el perfil llegan al estado del mapa`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val preferences = FakeUserPreferencesRepository(
+            initial = com.deciaventuras.app.domain.model.UserPreferences(alias = "Sofía", avatarIndex = 3),
+        )
+        val viewModel = DashboardViewModel(repository, preferences)
+
+        val state = viewModel.uiState.value
+
+        assertThat(state.alias).isEqualTo("Sofía")
+        assertThat(state.avatarIndex).isEqualTo(3)
+    }
 }
+
