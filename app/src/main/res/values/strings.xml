@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DeciAventuras</string>
+    <string name="app_tagline">El Camino de tus Decisiones</string>
+
+    <!-- Navegación -->
+    <string name="nav_map">Mapa</string>
+    <string name="nav_journal">Diario</string>
+
+    <!-- Se completan en los siguientes pasos: Dashboard, Simulador y Diario -->
+</resources>

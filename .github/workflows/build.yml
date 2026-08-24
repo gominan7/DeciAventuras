@@ -1,0 +1,71 @@
+name: Build DeciAventuras
+
+# Se ejecuta al hacer push o abrir un Pull Request contra main.
+# NOTA: este repositorio no incluye configuración de push automático;
+# el usuario decide cuándo hacer git push (Sección 30 del spec maestro).
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cachear dependencias de Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Dar permisos de ejecución a gradlew
+        run: chmod +x ./gradlew
+
+      - name: Limpiar proyecto
+        run: ./gradlew clean
+
+      - name: Ejecutar pruebas unitarias (domain, repository, ViewModel)
+        run: ./gradlew testDebugUnitTest
+
+      - name: Ejecutar lint
+        run: ./gradlew lintDebug
+
+      - name: Compilar APK de depuración
+        run: ./gradlew assembleDebug
+
+      - name: Calcular SHA-256 del APK
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          echo "APK generado en: $APK_PATH"
+          sha256sum "$APK_PATH" | tee app-debug-sha256.txt
+
+      - name: Publicar resultados de pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/build/reports/tests/
+
+      - name: Publicar reporte de lint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+
+      - name: Publicar APK de depuración
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeciAventuras-debug-apk
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app-debug-sha256.txt

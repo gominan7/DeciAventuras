@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sin datos personales identificables: solo progreso de juego local (Sección 27 del spec maestro). -->
+<full-backup-content>
+    <include domain="database" path="deciaventuras.db" />
+</full-backup-content>

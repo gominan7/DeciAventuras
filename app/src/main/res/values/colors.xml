@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="jungle_green">#FF1E8A4C</color>
+    <color name="fire_orange">#FFF4611E</color>
+    <color name="sky_blue">#FF2E9FD6</color>
+    <color name="parchment_background">#FFF7EEDD</color>
+    <color name="parchment_surface">#FFFFFBF2</color>
+    <color name="ink_brown">#FF3E2C23</color>
+</resources>

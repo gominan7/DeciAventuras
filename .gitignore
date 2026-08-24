@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+app/build/
+*.hprof
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.DS_Store
+captures/
+
+# Keystore (nunca versionar claves de firma reales)
+*.jks
+*.keystore
+
+# Logs de build
+*.log
+
+# Salida de tests
+app/build/test-results/
+app/build/reports/
