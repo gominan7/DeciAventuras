@@ -26,6 +26,10 @@ class FakeUserPreferencesRepository(
         state.value = state.value.copy(hapticsEnabled = enabled)
     }
 
+    override suspend fun setSoundEnabled(enabled: Boolean) {
+        state.value = state.value.copy(soundEnabled = enabled)
+    }
+
     override suspend fun completeOnboarding() {
         state.value = state.value.copy(onboardingCompleted = true)
     }

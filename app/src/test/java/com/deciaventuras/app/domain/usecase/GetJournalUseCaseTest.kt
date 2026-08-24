@@ -17,7 +17,7 @@ class GetJournalUseCaseTest {
         assertThat(state.entries).isEmpty()
         assertThat(state.earnedBadges).isEmpty()
         assertThat(state.completedCount).isEqualTo(0)
-        assertThat(state.totalCount).isEqualTo(5)
+        assertThat(state.totalCount).isEqualTo(10)
     }
 
     @Test
@@ -79,6 +79,6 @@ class GetJournalUseCaseTest {
         val state = useCase.once()
 
         assertThat(state.completedCount).isEqualTo(1)
-        assertThat(state.totalCount).isEqualTo(5)
+        assertThat(state.totalCount).isEqualTo(10)
     }
 }

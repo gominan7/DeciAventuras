@@ -14,6 +14,7 @@ data class UserPreferencesEntity(
     val alias: String,
     val avatarIndex: Int,
     val hapticsEnabled: Boolean,
+    val soundEnabled: Boolean = true,
     val onboardingCompleted: Boolean,
 ) {
     companion object {
@@ -25,6 +26,7 @@ fun UserPreferencesEntity.toDomain(): UserPreferences = UserPreferences(
     alias = alias,
     avatarIndex = avatarIndex,
     hapticsEnabled = hapticsEnabled,
+    soundEnabled = soundEnabled,
     onboardingCompleted = onboardingCompleted,
 )
 
@@ -32,5 +34,6 @@ fun UserPreferences.toEntity(): UserPreferencesEntity = UserPreferencesEntity(
     alias = alias,
     avatarIndex = avatarIndex,
     hapticsEnabled = hapticsEnabled,
+    soundEnabled = soundEnabled,
     onboardingCompleted = onboardingCompleted,
 )

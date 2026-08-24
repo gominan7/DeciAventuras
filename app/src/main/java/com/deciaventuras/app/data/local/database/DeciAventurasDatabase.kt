@@ -25,7 +25,7 @@ private const val DATABASE_NAME = "deciaventuras.db"
         UserProgressEntity::class,
         UserPreferencesEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class DeciAventurasDatabase : RoomDatabase() {
@@ -69,11 +69,12 @@ abstract class DeciAventurasDatabase : RoomDatabase() {
                 DATABASE_NAME,
             )
                 // Migración destructiva (versión 1→2 agregó user_preferences;
-                // 2→3 agregó la columna reflection en user_progress). Se
-                // acepta porque el proyecto todavía no está publicado: no hay
-                // progreso real de usuarios que proteger. ANTES de una
-                // release pública, esto debe reemplazarse por Migration
-                // explícitas que preserven los datos ya guardados.
+                // 2→3 agregó reflection en user_progress; 3→4 agregó
+                // soundEnabled en user_preferences). Se acepta porque el
+                // proyecto todavía no está publicado: no hay progreso real
+                // de usuarios que proteger. ANTES de una release pública,
+                // esto debe reemplazarse por Migration explícitas que
+                // preserven los datos ya guardados.
                 .fallbackToDestructiveMigration()
                 .addCallback(seedCallback(databaseProvider = { database }, scope = scope))
                 .build()

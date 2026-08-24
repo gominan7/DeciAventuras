@@ -83,6 +83,7 @@ class EntityMappingTest {
             alias = "Explorador07",
             avatarIndex = 5,
             hapticsEnabled = false,
+            soundEnabled = false,
             onboardingCompleted = true,
         )
 

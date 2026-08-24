@@ -107,4 +107,29 @@ class SimulatorViewModelTest {
         val savedEntry = repository.observeProgress().first().single()
         assertThat(savedEntry.reflection).isNull()
     }
+
+    @Test
+    fun `completar un dilema que no es el ultimo NO marca isFinalDilemma`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
+        val chosen = viewModel.uiState.value.choices.first { it.id == 1 }
+
+        viewModel.onChoiceDropped(chosen)
+
+        assertThat(viewModel.uiState.value.isFinalDilemma).isFalse()
+    }
+
+    @Test
+    fun `completar el ultimo dilema disponible marca isFinalDilemma (dispara la Celebracion)`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
+        // El dilema 10 es el último de la cadena actual (ver SeedData).
+        val viewModel = SimulatorViewModel(dilemmaId = 10, repository, recordChoice, FakeUserPreferencesRepository())
+        val chosen = viewModel.uiState.value.choices.first { it.id == 29 }
+
+        viewModel.onChoiceDropped(chosen)
+
+        assertThat(viewModel.uiState.value.isFinalDilemma).isTrue()
+    }
 }

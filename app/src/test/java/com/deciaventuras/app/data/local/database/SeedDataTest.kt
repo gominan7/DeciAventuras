@@ -5,14 +5,14 @@ import org.junit.Test
 
 /**
  * Valida que los datos semilla cumplan lo exigido por APP_PROMPT.md §5:
- * al menos 5 dilemas reales, cada uno con 2-3 tarjetas de decisión con
- * contenido real (no placeholders ni campos vacíos).
+ * al menos 5 dilemas reales (hoy son 10), cada uno con 2-3 tarjetas de
+ * decisión con contenido real (no placeholders ni campos vacíos).
  */
 class SeedDataTest {
 
     @Test
-    fun `hay exactamente 5 dilemas semilla`() {
-        assertThat(SeedData.dilemmas).hasSize(5)
+    fun `hay exactamente 10 dilemas semilla`() {
+        assertThat(SeedData.dilemmas).hasSize(10)
     }
 
     @Test
@@ -22,9 +22,9 @@ class SeedDataTest {
     }
 
     @Test
-    fun `los orderIndex de dilema son 0,1,2,3,4 sin huecos`() {
+    fun `los orderIndex de dilema son 0 a 9 sin huecos`() {
         val orders = SeedData.dilemmas.map { it.orderIndex }.sorted()
-        assertThat(orders).isEqualTo(listOf(0, 1, 2, 3, 4))
+        assertThat(orders).isEqualTo((0..9).toList())
     }
 
     @Test

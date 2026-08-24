@@ -14,6 +14,8 @@ interface UserPreferencesRepository {
 
     suspend fun setHapticsEnabled(enabled: Boolean)
 
+    suspend fun setSoundEnabled(enabled: Boolean)
+
     suspend fun completeOnboarding()
 
     /** Borra el perfil por completo (alias, avatar y preferencias vuelven a sus valores por defecto). */

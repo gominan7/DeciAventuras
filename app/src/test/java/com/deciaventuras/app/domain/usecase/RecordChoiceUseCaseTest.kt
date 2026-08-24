@@ -57,15 +57,26 @@ class RecordChoiceUseCaseTest {
     }
 
     @Test
-    fun `resolver el ultimo dilema (5) no intenta desbloquear nada mas`() = runTest {
+    fun `resolver el dilema 5 ahora desbloquea el 6 (dejo de ser el ultimo tras agregar mas dilemas)`() = runTest {
         val repository = FakeDilemmaRepository()
         val useCase = RecordChoiceUseCase(repository, fixedClock)
 
         val result = useCase(dilemmaId = 5, choiceId = 14)
 
+        assertThat(result).isEqualTo(RecordChoiceUseCase.Result.UnlockedNext(nextDilemmaId = 6))
+        assertThat(repository.getDilemma(6)?.isUnlocked).isTrue()
+    }
+
+    @Test
+    fun `resolver el ultimo dilema (10) no intenta desbloquear nada mas`() = runTest {
+        val repository = FakeDilemmaRepository()
+        val useCase = RecordChoiceUseCase(repository, fixedClock)
+
+        val result = useCase(dilemmaId = 10, choiceId = 29)
+
         assertThat(result).isEqualTo(RecordChoiceUseCase.Result.NoMoreDilemmas)
-        val dilemma5 = repository.getDilemma(5)
-        assertThat(dilemma5?.isCompleted).isTrue()
+        val dilemma10 = repository.getDilemma(10)
+        assertThat(dilemma10?.isCompleted).isTrue()
     }
 
     @Test

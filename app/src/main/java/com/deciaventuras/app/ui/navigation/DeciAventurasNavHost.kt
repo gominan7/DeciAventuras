@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.deciaventuras.app.ui.screens.celebration.CelebrationScreen
 import com.deciaventuras.app.ui.screens.dashboard.DashboardScreen
 import com.deciaventuras.app.ui.screens.journal.JournalScreen
 import com.deciaventuras.app.ui.screens.onboarding.OnboardingScreen
@@ -71,6 +72,11 @@ fun DeciAventurasNavHost(navController: NavHostController = rememberNavControlle
             SimulatorScreen(
                 dilemmaId = dilemmaId,
                 onFinished = { navController.popBackStack() },
+                onAllCompleted = {
+                    navController.navigate(Routes.Celebration.route) {
+                        popUpTo(Routes.Dashboard.route) { inclusive = false }
+                    }
+                },
             )
         }
 
@@ -93,6 +99,17 @@ fun DeciAventurasNavHost(navController: NavHostController = rememberNavControlle
                     // pasar por el Onboarding, no solo por el Mapa.
                     navController.navigate(Routes.Onboarding.route) {
                         popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(Routes.Celebration.route) {
+            CelebrationScreen(
+                onBackToMap = {
+                    navController.navigate(Routes.Dashboard.route) {
+                        popUpTo(Routes.Dashboard.route) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
             )

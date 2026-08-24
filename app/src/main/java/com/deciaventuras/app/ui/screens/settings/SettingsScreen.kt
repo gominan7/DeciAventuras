@@ -46,6 +46,7 @@ fun SettingsScreen(onBack: () -> Unit, onProgressReset: () -> Unit) {
         },
     )
     val hapticsEnabled by viewModel.hapticsEnabled.collectAsStateWithLifecycle()
+    val soundEnabled by viewModel.soundEnabled.collectAsStateWithLifecycle()
     var showResetConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -68,6 +69,22 @@ fun SettingsScreen(onBack: () -> Unit, onProgressReset: () -> Unit) {
                 color = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Efectos de sonido", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Un pequeño sonido al acertar una decisión, y una fanfarria al completar todas las aventuras.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = soundEnabled, onCheckedChange = viewModel::setSoundEnabled)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

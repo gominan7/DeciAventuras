@@ -2,9 +2,8 @@
 -- DeciAventuras — Datos semilla (equivalente SQL de SeedData.kt)
 -- ============================================================
 -- Fuente de verdad real: app/src/main/java/com/deciaventuras/app/data/local/database/SeedData.kt
--- Este archivo es la documentación en SQL puro de esos mismos datos
--- (Sección 33 del spec maestro), útil para inspeccionar el contenido sin
--- abrir Android Studio.
+-- Generado automáticamente a partir de ese archivo (no transcripto a mano),
+-- para que nunca se desalinee con el contenido real de la app.
 
 -- 1) Dilemas (el primero empieza desbloqueado; el resto, bloqueado)
 INSERT INTO `dilemmas` (`id`, `orderIndex`, `title`, `description`, `isUnlocked`, `isCompleted`) VALUES
@@ -22,9 +21,24 @@ INSERT INTO `dilemmas` (`id`, `orderIndex`, `title`, `description`, `isUnlocked`
     0, 0),
 (5, 4, 'El botín perdido',
     'En el parque, entre los arbustos, encuentras una mochila con un videojuego increíble adentro. No hay nadie cerca.',
+    0, 0),
+(6, 5, 'El juguete prestado',
+    'Tu amigo te pide prestado tu juguete favorito para llevarlo a su casa por unos días.',
+    0, 0),
+(7, 6, 'El que se ríe de otro',
+    'En el recreo ves que un compañero se burla de otro niño, y varios se ríen con él.',
+    0, 0),
+(8, 7, 'La invitación en línea',
+    'Tus amigos te invitan a jugar en línea justo cuando tenías que ayudar en casa.',
+    0, 0),
+(9, 8, 'El partido que perdiste',
+    'Tu equipo pierde un partido importante por un error tuyo, y todos se dan cuenta.',
+    0, 0),
+(10, 9, 'El florero roto',
+    'Jugando en la casa de tu abuela, sin querer rompes un florero que le encanta.',
     0, 0);
 
--- 2) Tarjetas de decisión (3 por dilema = 15 en total)
+-- 2) Tarjetas de decisión (3 por dilema = 30 en total)
 
 -- Aventura 1: El tesoro del recreo
 INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
@@ -100,3 +114,78 @@ INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTerm
     'No te llevas nada ni avisas a nadie, solo sigues tu camino.',
     'Nunca sabes si el dueño la recuperó, y te queda la duda de si podrías haber ayudado más entregándola a un adulto.',
     'Prudencia');
+
+-- Aventura 6: El juguete prestado
+INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
+(16, 6, 0, 'Prestárselo aunque te dé un poco de miedo que se rompa',
+    'Tu amigo se pone recontento y te lo agradece muchísimo.',
+    'Cuando te lo devuelve tiene una rayadura, pero tu amigo se disculpa y entre los dos lo arreglan con cariño.',
+    'Generosidad'),
+(17, 6, 1, 'Decirle que preferís no prestarlo',
+    'Tu amigo se pone un poco triste, pero lo entiende.',
+    'Tu juguete sigue intacto, aunque a veces pensás si debiste haberlo compartido.',
+    'Prudencia'),
+(18, 6, 2, 'Prestarle otro juguete en su lugar',
+    'Tu amigo se sorprende, pero acepta contento el otro juguete.',
+    'Aprendés que podés ser generoso sin arriesgar lo que más te importa.',
+    'Diplomacia');
+
+-- Aventura 7: El que se ríe de otro
+INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
+(19, 7, 0, 'Sumarte a las risas para no quedar afuera',
+    'Te sentís parte del grupo por un momento.',
+    'El compañero molestado deja de confiar en vos, y en el fondo te sentís mal por lo que hiciste.',
+    'Conformidad'),
+(20, 7, 1, 'Quedarte callado y alejarte',
+    'Evitás el conflicto y nadie te dice nada.',
+    'El compañero molestado sigue sintiéndose solo, y te queda la sensación de que podrías haber hecho algo.',
+    'Cautela'),
+(21, 7, 2, 'Decirle al que se burla que pare, o acompañar al que fue molestado',
+    'Al principio es incómodo, pero el compañero molestado te mira agradecido.',
+    'Con el tiempo, el grupo entiende que burlarse no está bien, y vos te ganás la confianza de todos.',
+    'Valentía');
+
+-- Aventura 8: La invitación en línea
+INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
+(22, 8, 0, 'Jugar igual y decir que ayudás después',
+    'Te divertís un montón jugando con tus amigos.',
+    'Se te olvida ayudar, y en casa quedan un poco decepcionados con vos.',
+    'Impulsividad'),
+(23, 8, 1, 'Avisar que jugás más tarde y ayudar primero',
+    'Extrañás un poco no jugar de una, pero ayudás rápido y bien.',
+    'Cuando terminás, tus amigos todavía están jugando y te sumás sin problema, y en casa confían más en vos.',
+    'Responsabilidad'),
+(24, 8, 2, 'Pedir jugar 10 minutos y avisar que después ayudás',
+    'Jugás un ratito corto, avisando bien el tiempo que tenés.',
+    'Cumplís con las dos cosas, aunque tenés que dejar de jugar justo en la mejor parte.',
+    'Equilibrio');
+
+-- Aventura 9: El partido que perdiste
+INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
+(25, 9, 0, 'Culpar a un compañero para no sentirte tan mal',
+    'Por un momento te sentís menos culpable.',
+    'Tu compañero se entera de que no fue su error, y la confianza del equipo en vos se debilita.',
+    'Evasión'),
+(26, 9, 1, 'Reconocer tu error frente al equipo',
+    'Cuesta un poco decirlo en voz alta, pero tus compañeros lo valoran.',
+    'El equipo confía más en vos para el próximo partido, sabiendo que sos sincero.',
+    'Honestidad'),
+(27, 9, 2, 'Quedarte callado sin decir nada',
+    'Nadie te dice nada directamente sobre lo que pasó.',
+    'Por dentro seguís sintiendo el peso del error, y te cuesta disfrutar el próximo partido.',
+    'Reserva');
+
+-- Aventura 10: El florero roto
+INSERT INTO `choices` (`id`, `dilemmaId`, `orderIndex`, `choiceText`, `shortTermEffect`, `longTermEffect`, `personalityTrait`) VALUES
+(28, 10, 0, 'Esconder los pedazos y no decir nada',
+    'Nadie se da cuenta en el momento.',
+    'Tu abuela nota que falta el florero, y te sentís mal por no haberle contado la verdad.',
+    'Evitación'),
+(29, 10, 1, 'Contarle enseguida lo que pasó',
+    'Tu abuela se pone un poco triste por el florero, pero valora que se lo dijeras.',
+    'Entre los dos arreglan lo que se puede, y tu abuela confía más en vos que en el florero.',
+    'Honestidad'),
+(30, 10, 2, 'Contarle y ofrecerte a ayudar a reemplazarlo',
+    'Tu abuela se sorprende gratamente con tu propuesta.',
+    'Aprendés que reparar un error también significa hacerte cargo, no solo pedir perdón.',
+    'Responsabilidad');

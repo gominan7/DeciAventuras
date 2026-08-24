@@ -57,6 +57,7 @@ fun DraggableChoiceCard(
     modifier: Modifier = Modifier,
     onDragHoverChange: (Boolean) -> Unit = {},
     hapticsEnabled: Boolean = true,
+    onDropSuccess: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val offset = remember(choice.id) { Animatable(Offset.Zero, Offset.VectorConverter) }
@@ -95,6 +96,7 @@ fun DraggableChoiceCard(
                             if (hapticsEnabled) {
                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             }
+                            onDropSuccess()
                             onDropped(choice)
                         } else {
                             scope.launch { offset.animateTo(Offset.Zero, spring()) }

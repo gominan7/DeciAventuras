@@ -59,6 +59,51 @@ object SeedData {
             isUnlocked = false,
             isCompleted = false,
         ),
+        DilemmaEntity(
+            id = 6,
+            orderIndex = 5,
+            title = "El juguete prestado",
+            description = "Tu amigo te pide prestado tu juguete favorito para llevarlo " +
+                "a su casa por unos días.",
+            isUnlocked = false,
+            isCompleted = false,
+        ),
+        DilemmaEntity(
+            id = 7,
+            orderIndex = 6,
+            title = "El que se ríe de otro",
+            description = "En el recreo ves que un compañero se burla de otro niño, " +
+                "y varios se ríen con él.",
+            isUnlocked = false,
+            isCompleted = false,
+        ),
+        DilemmaEntity(
+            id = 8,
+            orderIndex = 7,
+            title = "La invitación en línea",
+            description = "Tus amigos te invitan a jugar en línea justo cuando tenías " +
+                "que ayudar en casa.",
+            isUnlocked = false,
+            isCompleted = false,
+        ),
+        DilemmaEntity(
+            id = 9,
+            orderIndex = 8,
+            title = "El partido que perdiste",
+            description = "Tu equipo pierde un partido importante por un error tuyo, " +
+                "y todos se dan cuenta.",
+            isUnlocked = false,
+            isCompleted = false,
+        ),
+        DilemmaEntity(
+            id = 10,
+            orderIndex = 9,
+            title = "El florero roto",
+            description = "Jugando en la casa de tu abuela, sin querer rompes un " +
+                "florero que le encanta.",
+            isUnlocked = false,
+            isCompleted = false,
+        ),
     )
 
     val choices: List<ChoiceEntity> = listOf(
@@ -187,6 +232,131 @@ object SeedData {
             longTermEffect = "Nunca sabes si el dueño la recuperó, y te queda la duda de si podrías haber " +
                 "ayudado más entregándola a un adulto.",
             personalityTrait = "Prudencia",
+        ),
+
+        // --- Aventura 6: El juguete prestado ---
+        ChoiceEntity(
+            id = 16, dilemmaId = 6, orderIndex = 0,
+            choiceText = "Prestárselo aunque te dé un poco de miedo que se rompa",
+            shortTermEffect = "Tu amigo se pone recontento y te lo agradece muchísimo.",
+            longTermEffect = "Cuando te lo devuelve tiene una rayadura, pero tu amigo se disculpa y entre " +
+                "los dos lo arreglan con cariño.",
+            personalityTrait = "Generosidad",
+        ),
+        ChoiceEntity(
+            id = 17, dilemmaId = 6, orderIndex = 1,
+            choiceText = "Decirle que preferís no prestarlo",
+            shortTermEffect = "Tu amigo se pone un poco triste, pero lo entiende.",
+            longTermEffect = "Tu juguete sigue intacto, aunque a veces pensás si debiste haberlo compartido.",
+            personalityTrait = "Prudencia",
+        ),
+        ChoiceEntity(
+            id = 18, dilemmaId = 6, orderIndex = 2,
+            choiceText = "Prestarle otro juguete en su lugar",
+            shortTermEffect = "Tu amigo se sorprende, pero acepta contento el otro juguete.",
+            longTermEffect = "Aprendés que podés ser generoso sin arriesgar lo que más te importa.",
+            personalityTrait = "Diplomacia",
+        ),
+
+        // --- Aventura 7: El que se ríe de otro ---
+        ChoiceEntity(
+            id = 19, dilemmaId = 7, orderIndex = 0,
+            choiceText = "Sumarte a las risas para no quedar afuera",
+            shortTermEffect = "Te sentís parte del grupo por un momento.",
+            longTermEffect = "El compañero molestado deja de confiar en vos, y en el fondo te sentís mal " +
+                "por lo que hiciste.",
+            personalityTrait = "Conformidad",
+        ),
+        ChoiceEntity(
+            id = 20, dilemmaId = 7, orderIndex = 1,
+            choiceText = "Quedarte callado y alejarte",
+            shortTermEffect = "Evitás el conflicto y nadie te dice nada.",
+            longTermEffect = "El compañero molestado sigue sintiéndose solo, y te queda la sensación de que " +
+                "podrías haber hecho algo.",
+            personalityTrait = "Cautela",
+        ),
+        ChoiceEntity(
+            id = 21, dilemmaId = 7, orderIndex = 2,
+            choiceText = "Decirle al que se burla que pare, o acompañar al que fue molestado",
+            shortTermEffect = "Al principio es incómodo, pero el compañero molestado te mira agradecido.",
+            longTermEffect = "Con el tiempo, el grupo entiende que burlarse no está bien, y vos te ganás " +
+                "la confianza de todos.",
+            personalityTrait = "Valentía",
+        ),
+
+        // --- Aventura 8: La invitación en línea ---
+        ChoiceEntity(
+            id = 22, dilemmaId = 8, orderIndex = 0,
+            choiceText = "Jugar igual y decir que ayudás después",
+            shortTermEffect = "Te divertís un montón jugando con tus amigos.",
+            longTermEffect = "Se te olvida ayudar, y en casa quedan un poco decepcionados con vos.",
+            personalityTrait = "Impulsividad",
+        ),
+        ChoiceEntity(
+            id = 23, dilemmaId = 8, orderIndex = 1,
+            choiceText = "Avisar que jugás más tarde y ayudar primero",
+            shortTermEffect = "Extrañás un poco no jugar de una, pero ayudás rápido y bien.",
+            longTermEffect = "Cuando terminás, tus amigos todavía están jugando y te sumás sin problema, " +
+                "y en casa confían más en vos.",
+            personalityTrait = "Responsabilidad",
+        ),
+        ChoiceEntity(
+            id = 24, dilemmaId = 8, orderIndex = 2,
+            choiceText = "Pedir jugar 10 minutos y avisar que después ayudás",
+            shortTermEffect = "Jugás un ratito corto, avisando bien el tiempo que tenés.",
+            longTermEffect = "Cumplís con las dos cosas, aunque tenés que dejar de jugar justo en la mejor parte.",
+            personalityTrait = "Equilibrio",
+        ),
+
+        // --- Aventura 9: El partido que perdiste ---
+        ChoiceEntity(
+            id = 25, dilemmaId = 9, orderIndex = 0,
+            choiceText = "Culpar a un compañero para no sentirte tan mal",
+            shortTermEffect = "Por un momento te sentís menos culpable.",
+            longTermEffect = "Tu compañero se entera de que no fue su error, y la confianza del equipo en " +
+                "vos se debilita.",
+            personalityTrait = "Evasión",
+        ),
+        ChoiceEntity(
+            id = 26, dilemmaId = 9, orderIndex = 1,
+            choiceText = "Reconocer tu error frente al equipo",
+            shortTermEffect = "Cuesta un poco decirlo en voz alta, pero tus compañeros lo valoran.",
+            longTermEffect = "El equipo confía más en vos para el próximo partido, sabiendo que sos sincero.",
+            personalityTrait = "Honestidad",
+        ),
+        ChoiceEntity(
+            id = 27, dilemmaId = 9, orderIndex = 2,
+            choiceText = "Quedarte callado sin decir nada",
+            shortTermEffect = "Nadie te dice nada directamente sobre lo que pasó.",
+            longTermEffect = "Por dentro seguís sintiendo el peso del error, y te cuesta disfrutar el " +
+                "próximo partido.",
+            personalityTrait = "Reserva",
+        ),
+
+        // --- Aventura 10: El florero roto ---
+        ChoiceEntity(
+            id = 28, dilemmaId = 10, orderIndex = 0,
+            choiceText = "Esconder los pedazos y no decir nada",
+            shortTermEffect = "Nadie se da cuenta en el momento.",
+            longTermEffect = "Tu abuela nota que falta el florero, y te sentís mal por no haberle contado " +
+                "la verdad.",
+            personalityTrait = "Evitación",
+        ),
+        ChoiceEntity(
+            id = 29, dilemmaId = 10, orderIndex = 1,
+            choiceText = "Contarle enseguida lo que pasó",
+            shortTermEffect = "Tu abuela se pone un poco triste por el florero, pero valora que se lo dijeras.",
+            longTermEffect = "Entre los dos arreglan lo que se puede, y tu abuela confía más en vos que " +
+                "en el florero.",
+            personalityTrait = "Honestidad",
+        ),
+        ChoiceEntity(
+            id = 30, dilemmaId = 10, orderIndex = 2,
+            choiceText = "Contarle y ofrecerte a ayudar a reemplazarlo",
+            shortTermEffect = "Tu abuela se sorprende gratamente con tu propuesta.",
+            longTermEffect = "Aprendés que reparar un error también significa hacerte cargo, no solo " +
+                "pedir perdón.",
+            personalityTrait = "Responsabilidad",
         ),
     )
 }

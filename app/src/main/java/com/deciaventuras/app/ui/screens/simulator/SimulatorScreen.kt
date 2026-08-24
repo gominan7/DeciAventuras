@@ -29,9 +29,14 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -65,6 +70,7 @@ import com.deciaventuras.app.domain.model.Dilemma
 import com.deciaventuras.app.ui.components.CompassDropZone
 import com.deciaventuras.app.ui.components.DraggableChoiceCard
 import com.deciaventuras.app.ui.components.ExplorerBadge
+import com.deciaventuras.app.ui.util.rememberSoundEffects
 
 /**
  * Pantalla B: El Simulador (APP_PROMPT.md §3-B). El niño arrastra una
@@ -77,6 +83,7 @@ import com.deciaventuras.app.ui.components.ExplorerBadge
 fun SimulatorScreen(
     dilemmaId: Int,
     onFinished: () -> Unit,
+    onAllCompleted: () -> Unit,
 ) {
     val container = rememberAppContainer()
     val viewModel: SimulatorViewModel = viewModel(
@@ -92,6 +99,7 @@ fun SimulatorScreen(
         },
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val soundEffects = rememberSoundEffects()
 
     var dropZoneBounds by remember { mutableStateOf<Rect?>(null) }
     var isDropZoneActive by remember { mutableStateOf(false) }
@@ -151,6 +159,9 @@ fun SimulatorScreen(
                                         onDropped = viewModel::onChoiceDropped,
                                         onDragHoverChange = { isDropZoneActive = it },
                                         hapticsEnabled = uiState.hapticsEnabled,
+                                        onDropSuccess = {
+                                            if (uiState.soundEnabled) soundEffects.playSuccess()
+                                        },
                                     )
                                 }
                             }
@@ -171,7 +182,9 @@ fun SimulatorScreen(
                     ResultPanel(
                         choice = choice,
                         onContinue = { reflection ->
-                            viewModel.saveReflectionAndContinue(reflection, onFinished)
+                            viewModel.saveReflectionAndContinue(reflection) {
+                                if (uiState.isFinalDilemma) onAllCompleted() else onFinished()
+                            }
                         },
                     )
                 }
@@ -345,5 +358,10 @@ private fun iconForDilemma(dilemmaId: Int): ImageVector = when (dilemmaId) {
     3 -> Icons.Filled.Security
     4 -> Icons.Filled.Bedtime
     5 -> Icons.Filled.Backpack
+    6 -> Icons.Filled.Favorite
+    7 -> Icons.Filled.Face
+    8 -> Icons.Filled.Home
+    9 -> Icons.Filled.Star
+    10 -> Icons.Filled.Warning
     else -> Icons.Filled.Security
 }

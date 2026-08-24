@@ -20,8 +20,11 @@ data class SimulatorUiState(
     val resultChoice: Choice? = null,
     val isLoading: Boolean = true,
     val hapticsEnabled: Boolean = true,
+    val soundEnabled: Boolean = true,
     /** Id de la fila de progreso recién guardada, para poder adjuntarle la reflexión del niño. */
     val savedProgressId: Int? = null,
+    /** true si esta decisión completó el último dilema disponible (dispara la Celebración). */
+    val isFinalDilemma: Boolean = false,
 ) {
     val isShowingResult: Boolean get() = resultChoice != null
 }
@@ -55,7 +58,10 @@ class SimulatorViewModel(
         }
         viewModelScope.launch {
             userPreferencesRepository.observePreferences().collect { prefs ->
-                _uiState.value = _uiState.value.copy(hapticsEnabled = prefs.hapticsEnabled)
+                _uiState.value = _uiState.value.copy(
+                    hapticsEnabled = prefs.hapticsEnabled,
+                    soundEnabled = prefs.soundEnabled,
+                )
             }
         }
     }
@@ -69,7 +75,7 @@ class SimulatorViewModel(
         if (_uiState.value.isShowingResult) return
         _uiState.value = _uiState.value.copy(resultChoice = choice)
         viewModelScope.launch {
-            recordChoiceUseCase(dilemmaId = dilemmaId, choiceId = choice.id)
+            val result = recordChoiceUseCase(dilemmaId = dilemmaId, choiceId = choice.id)
 
             // RecordChoiceUseCase no expone el id de la fila que insertó (no
             // es su responsabilidad); se busca la entrada recién guardada
@@ -81,7 +87,10 @@ class SimulatorViewModel(
                 .maxByOrNull { it.timestampMillis }
                 ?.id
 
-            _uiState.value = _uiState.value.copy(savedProgressId = progressId)
+            _uiState.value = _uiState.value.copy(
+                savedProgressId = progressId,
+                isFinalDilemma = result is RecordChoiceUseCase.Result.NoMoreDilemmas,
+            )
         }
     }
 

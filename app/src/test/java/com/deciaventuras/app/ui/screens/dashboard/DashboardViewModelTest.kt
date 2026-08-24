@@ -21,8 +21,8 @@ class DashboardViewModelTest {
 
         val state = viewModel.uiState.value
 
-        assertThat(state.dilemmas).hasSize(5)
-        assertThat(state.totalCount).isEqualTo(5)
+        assertThat(state.dilemmas).hasSize(10)
+        assertThat(state.totalCount).isEqualTo(10)
         assertThat(state.completedCount).isEqualTo(0)
         assertThat(state.dilemmas.first().isUnlocked).isTrue()
     }

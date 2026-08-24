@@ -10,20 +10,31 @@ específico en `APP_PROMPT.md`.
 
 ## Estado actual del proyecto
 
-🟢 **Paso 5/7: Avatar ilustrado + perfil visible en el Mapa, reflexión propia en el Diario — sobre una base confirmada funcionando en dispositivo real.**
+🟢 **Paso 6/7: 10 dilemas, Pantalla de Celebración y sonido real — sobre una base confirmada funcionando en dispositivo real.**
 
-Dos correcciones reales encontradas por el usuario probando en su celular:
-1. Los "avatares" del onboarding eran simples círculos de color, sin ningún
-   personaje — se reemplazaron por `ExplorerAvatar`, un zorrito ilustrado
-   con Compose Canvas (el personaje guía que ya estaba mencionado en el
-   diseño original de la app y nunca se había usado).
-2. El Mapa de Aventuras nunca mostraba el alias ni el avatar guardados en
-   el Onboarding — el `DashboardViewModel` no leía `UserPreferencesRepository`.
-   Ahora el header del Mapa muestra el avatar + alias reales.
+Tres funcionalidades nuevas, elegidas por el usuario para que el juego dure
+más y se sienta más completo:
 
-Además, en esta tanda: al terminar un dilema, el niño puede escribir
-opcionalmente qué aprendió, y esa reflexión queda guardada junto a la
-decisión en el Diario de Explorador — es 100% opcional.
+1. **5 dilemas nuevos** (total 10): juguete prestado, burla entre
+   compañeros, invitación en línea vs. ayudar en casa, partido perdido, y
+   florero roto en casa de la abuela. Mismo estándar de calidad que los
+   primeros 5 (3 decisiones reales cada uno, consecuencia inmediata + a
+   largo plazo distintas entre sí).
+2. **Pantalla de Celebración**: al completar el último dilema disponible
+   (`RecordChoiceUseCase` devuelve `NoMoreDilemmas`), en vez de volver
+   directo al Mapa se muestra una pantalla dedicada con el resumen de
+   insignias ganadas — reutiliza `JournalViewModel` en vez de duplicar lógica.
+3. **Sonido real** (no decorativo): dos efectos sintetizados localmente sin
+   assets de terceros (`scripts/gen_sound_effects.py`, ondas senoidales con
+   envolvente) — un "ding" al soltar una decisión con éxito, y una
+   fanfarria corta en la Celebración. El toggle "Efectos de sonido" en
+   Ajustes, que antes dejamos afuera a propósito por no tener nada que
+   controlar, ahora sí es funcional.
+
+En el camino encontré y corregí un bug real: el método `save()` del
+repositorio de preferencias no pasaba `soundEnabled` explícitamente, lo que
+hubiera reseteado esa preferencia a `true` cada vez que se guardaba
+cualquier otro campo del perfil.
 
 Lo que existe ya en este repositorio:
 
@@ -41,51 +52,61 @@ Lo que existe ya en este repositorio:
 - Gradle Wrapper 8.7 real (jar/scripts oficiales, no simulados).
 - Workflow de GitHub Actions (`.github/workflows/build.yml`) que compila,
   testea, lintea y publica el APK de depuración en cada push a `main`.
-- **Modelo Room v3**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema, `CASCADE`),
+- **Modelo Room v4**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema, `CASCADE`),
   `UserProgressEntity` (FK → dilema y decisión, `CASCADE`, historial
   *append-only* salvo por la columna `reflection`, la única actualizable),
-  y `UserPreferencesEntity` (tabla de una sola fila: alias, avatar,
-  vibración, onboarding completado). Migración destructiva documentada
-  (aceptable en esta etapa pre-release, no en producción).
-- **Los 5 dilemas semilla completos**, cada uno con 3 tarjetas de decisión
+  y `UserPreferencesEntity` (alias, avatar, vibración, sonido, onboarding
+  completado). Migración destructiva documentada (aceptable en esta etapa
+  pre-release, no en producción).
+- **Los 10 dilemas semilla completos**, cada uno con 3 tarjetas de decisión
   reales, espejadas en `database/sample_data.sql`.
-- **Dominio puro y testeable**: `RecordChoiceUseCase` (guarda decisión →
-  completa dilema → desbloquea el siguiente), `GetJournalUseCase`, y
-  **`ResetProgressUseCase`** (coordina borrar progreso + perfil).
+- **Dominio puro y testeable**: `RecordChoiceUseCase`, `GetJournalUseCase`,
+  y `ResetProgressUseCase` (coordina borrar progreso + perfil).
 - `AppContainer`: contenedor de dependencias manual, conectado a
   `DeciAventurasApp` y expuesto a Compose vía `rememberAppContainer()`.
 - **Drag & Drop real y verificado en dispositivo** (`DraggableChoiceCard.kt`):
   `detectDragGestures` + `Animatable` para el resorte de retorno, sin
   contenedores con scroll horizontal (competían por el gesto — bug real
-  encontrado y corregido), con pista visual animada enseñando la mecánica,
-  y haptic feedback apagable desde Ajustes.
-- **`CompassDropZone.kt`**: la Brújula ilustrada con Compose Canvas, con
-  animación de "brillo" cuando una tarjeta está encima.
-- **Las 5 pantallas completas, conectadas por Navigation Compose**:
+  encontrado y corregido), con pista visual animada, haptic feedback y
+  sonido apagables desde Ajustes.
+- **`CompassDropZone.kt`**: la Brújula ilustrada con Compose Canvas.
+- **`ExplorerAvatar.kt`**: el zorrito explorador ilustrado con Canvas (8
+  colores de pelaje), usado en el Onboarding y en el header del Mapa.
+- **Las 6 pantallas completas, conectadas por Navigation Compose**:
   - `SplashScreen` — decide sin UI visible si mostrar Onboarding o el Mapa.
   - `OnboardingScreen` — 3 páginas: bienvenida, cómo se juega, perfil (alias + avatar).
   - `DashboardScreen` — Mapa de Aventuras: camino serpenteante de nodos con
-    estado real y progreso derivado de los datos; ícono de Ajustes en el header.
+    estado real y progreso derivado de los datos; header con avatar + alias
+    reales del perfil, e ícono de Ajustes.
   - `SimulatorScreen` — situación → drag & drop → Impacto Inmediato +
     Destino Final → insignia ganada → reflexión propia opcional.
   - `JournalScreen` — insignias coleccionables + historial (con la
     reflexión del niño destacada cuando la escribió), estado vacío ilustrado.
-  - `SettingsScreen` — vibración (real) + reiniciar todo el progreso (con
-    confirmación). Se dejó afuera a propósito un toggle de "sonido de
-    efectos": la app no reproduce audio todavía, ese control sería decorativo.
+  - `SettingsScreen` — sonido (real) + vibración (real) + reiniciar todo
+    el progreso (con confirmación).
+  - `CelebrationScreen` — al completar el último dilema disponible: resumen
+    de insignias + fanfarria, con botón para volver al Mapa.
 - **ViewModels** conectados vía `viewModelFactory{}` (sin Hilt/Dagger).
-- **68 tests** (JUnit4 + Truth): 46 unitarios (dominio, seed data, mappers,
-  ViewModels, `ResetProgressUseCase`, reflexión, perfil en el Mapa, con
-  `MainDispatcherRule` + `FakeDilemmaRepository`/`FakeUserPreferencesRepository`,
-  sin Robolectric) + 22 instrumentados sobre Room real en memoria.
+- **75 tests** (JUnit4 + Truth): 53 unitarios (dominio, seed data, mappers,
+  ViewModels, `ResetProgressUseCase`, reflexión, perfil en el Mapa,
+  Celebración, Ajustes de sonido, con `MainDispatcherRule` +
+  `FakeDilemmaRepository`/`FakeUserPreferencesRepository`, sin Robolectric)
+  + 22 instrumentados sobre Room real en memoria.
 
 Lo que **todavía no existe**:
 
 - [ ] Documentación (`docs/MEMORIA_DESCRIPTIVA.md`, manuales, `BUILD_REPORT.md`) — siguiente paso.
-- [ ] Verificación en dispositivo real de la reflexión en el Diario (Paso 5):
-      pasó la misma auditoría manual de siempre, pero todavía no se probó
-      corriendo, a diferencia del Mapa/Simulador/Diario/Onboarding/Ajustes
-      que ya están confirmados funcionando.
+- [ ] Verificación en dispositivo real de ESTA tanda (10 dilemas, Celebración,
+      sonido): pasó la misma auditoría manual de siempre, pero todavía no
+      se probó corriendo, a diferencia del resto de la app que ya está
+      confirmado funcionando.
+
+`database/schema.sql` y `database/sample_data.sql` sí se pudieron verificar
+de verdad en este entorno (a diferencia del resto del proyecto): se
+regeneraron automáticamente a partir de `SeedData.kt` con
+`scripts/gen_sql_docs.py` (no transcriptos a mano, para que nunca se
+desalineen) y se ejecutaron contra un SQLite real en memoria, incluyendo
+una prueba de que las claves foráneas rechazan referencias inválidas.
 
 ## ⚠️ Compilación: verificada en GitHub Actions y dispositivo real (con una salvedad)
 
@@ -125,7 +146,7 @@ DeciAventuras/
 │       │   ├── data/
 │       │   │   ├── local/entity/      (Dilemma, Choice, UserProgress, UserPreferences) ✅
 │       │   │   ├── local/dao/         (DilemmaDao, ChoiceDao, UserProgressDao, UserPreferencesDao) ✅
-│       │   │   ├── local/database/    (DeciAventurasDatabase v2 + SeedData) ✅
+│       │   │   ├── local/database/    (DeciAventurasDatabase v4 + SeedData: 10 dilemas) ✅
 │       │   │   └── repository/        (DilemmaRepositoryImpl, UserPreferencesRepositoryImpl) ✅
 │       │   ├── domain/
 │       │   │   ├── model/             (Dilemma, Choice, UserProgress, JournalEntry, UserPreferences) ✅
@@ -133,18 +154,20 @@ DeciAventuras/
 │       │   │   └── usecase/           (RecordChoiceUseCase, GetJournalUseCase, ResetProgressUseCase) ✅
 │       │   ├── ui/
 │       │   │   ├── theme/             (Color, Type, Theme) ✅
+│       │   │   ├── util/              (SoundEffects, sfx_success/sfx_celebration) ✅
 │       │   │   ├── navigation/        (Routes, DeciAventurasNavHost, SplashScreen) ✅
-│       │   │   ├── components/        (DraggableChoiceCard, CompassDropZone,
+│       │   │   ├── components/        (DraggableChoiceCard, CompassDropZone, ExplorerAvatar,
 │       │   │   │                        DilemmaMapNode, ExplorerBadge, BottomBar) ✅
 │       │   │   └── screens/
 │       │   │       ├── onboarding/    (OnboardingScreen + ViewModel) ✅
 │       │   │       ├── dashboard/     (DashboardScreen + ViewModel) ✅
 │       │   │       ├── simulator/     (SimulatorScreen + ViewModel) ✅
 │       │   │       ├── journal/       (JournalScreen + ViewModel) ✅
-│       │   │       └── settings/      (SettingsScreen + ViewModel) ✅
+│       │   │       ├── settings/      (SettingsScreen + ViewModel) ✅
+│       │   │       └── celebration/   (CelebrationScreen) ✅
 │       │   └── di/                    (AppContainer + acceso desde Compose) ✅
-│       ├── test/java/...              (41 tests unitarios: dominio, seed, mappers, ViewModels) ✅
-│       └── androidTest/java/...       (19 tests instrumentados: Room real) ✅
+│       ├── test/java/...              (53 tests unitarios: dominio, seed, mappers, ViewModels) ✅
+│       └── androidTest/java/...       (22 tests instrumentados: Room real) ✅
 ├── database/
 │   ├── schema.sql          ✅
 │   └── sample_data.sql     ✅

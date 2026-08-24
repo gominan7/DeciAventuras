@@ -30,6 +30,10 @@ class UserPreferencesRepositoryImpl(
         save(current().copy(hapticsEnabled = enabled))
     }
 
+    override suspend fun setSoundEnabled(enabled: Boolean) {
+        save(current().copy(soundEnabled = enabled))
+    }
+
     override suspend fun completeOnboarding() {
         save(current().copy(onboardingCompleted = true))
     }
@@ -45,6 +49,7 @@ class UserPreferencesRepositoryImpl(
                 alias = preferences.alias,
                 avatarIndex = preferences.avatarIndex,
                 hapticsEnabled = preferences.hapticsEnabled,
+                soundEnabled = preferences.soundEnabled,
                 onboardingCompleted = preferences.onboardingCompleted,
             )
         )

@@ -23,8 +23,20 @@ class SettingsViewModel(
             initialValue = true,
         )
 
+    val soundEnabled: StateFlow<Boolean> = userPreferencesRepository.observePreferences()
+        .map { it.soundEnabled }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+            initialValue = true,
+        )
+
     fun setHapticsEnabled(enabled: Boolean) {
         viewModelScope.launch { userPreferencesRepository.setHapticsEnabled(enabled) }
+    }
+
+    fun setSoundEnabled(enabled: Boolean) {
+        viewModelScope.launch { userPreferencesRepository.setSoundEnabled(enabled) }
     }
 
     fun resetProgress(onDone: () -> Unit) {

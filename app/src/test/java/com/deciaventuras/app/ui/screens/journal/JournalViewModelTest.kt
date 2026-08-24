@@ -27,7 +27,7 @@ class JournalViewModelTest {
 
         assertThat(state.entries).isEmpty()
         assertThat(state.earnedBadges).isEmpty()
-        assertThat(state.totalCount).isEqualTo(5)
+        assertThat(state.totalCount).isEqualTo(10)
         
         collectJob.cancel()
     }

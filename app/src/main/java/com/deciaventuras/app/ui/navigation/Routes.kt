@@ -11,6 +11,7 @@ sealed class Routes(val route: String) {
     data object Dashboard : Routes("dashboard")
     data object Journal : Routes("journal")
     data object Settings : Routes("settings")
+    data object Celebration : Routes("celebration")
 
     data object Simulator : Routes("simulator/{dilemmaId}") {
         const val ARG_DILEMMA_ID = "dilemmaId"
