@@ -20,4 +20,8 @@ interface UserProgressDao {
 
     @Insert
     suspend fun insert(progress: UserProgressEntity): Long
+
+    /** Usado únicamente por el reinicio de progreso desde Ajustes (Sección "Reiniciar todo el progreso"). */
+    @Query("DELETE FROM user_progress")
+    suspend fun deleteAll()
 }

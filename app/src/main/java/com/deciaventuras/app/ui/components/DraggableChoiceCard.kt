@@ -56,6 +56,7 @@ fun DraggableChoiceCard(
     onDropped: (Choice) -> Unit,
     modifier: Modifier = Modifier,
     onDragHoverChange: (Boolean) -> Unit = {},
+    hapticsEnabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
     val offset = remember(choice.id) { Animatable(Offset.Zero, Offset.VectorConverter) }
@@ -91,7 +92,9 @@ fun DraggableChoiceCard(
                         isDragging = false
                         onDragHoverChange(false)
                         if (isOverlappingDropZone()) {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (hapticsEnabled) {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
                             onDropped(choice)
                         } else {
                             scope.launch { offset.animateTo(Offset.Zero, spring()) }
@@ -127,4 +130,3 @@ fun DraggableChoiceCard(
         }
     }
 }
-

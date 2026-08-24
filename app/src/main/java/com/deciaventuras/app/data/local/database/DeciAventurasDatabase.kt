@@ -7,9 +7,11 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.deciaventuras.app.data.local.dao.ChoiceDao
 import com.deciaventuras.app.data.local.dao.DilemmaDao
+import com.deciaventuras.app.data.local.dao.UserPreferencesDao
 import com.deciaventuras.app.data.local.dao.UserProgressDao
 import com.deciaventuras.app.data.local.entity.ChoiceEntity
 import com.deciaventuras.app.data.local.entity.DilemmaEntity
+import com.deciaventuras.app.data.local.entity.UserPreferencesEntity
 import com.deciaventuras.app.data.local.entity.UserProgressEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -17,8 +19,13 @@ import kotlinx.coroutines.launch
 private const val DATABASE_NAME = "deciaventuras.db"
 
 @Database(
-    entities = [DilemmaEntity::class, ChoiceEntity::class, UserProgressEntity::class],
-    version = 1,
+    entities = [
+        DilemmaEntity::class,
+        ChoiceEntity::class,
+        UserProgressEntity::class,
+        UserPreferencesEntity::class,
+    ],
+    version = 2,
     exportSchema = false,
 )
 abstract class DeciAventurasDatabase : RoomDatabase() {
@@ -26,6 +33,7 @@ abstract class DeciAventurasDatabase : RoomDatabase() {
     abstract fun dilemmaDao(): DilemmaDao
     abstract fun choiceDao(): ChoiceDao
     abstract fun userProgressDao(): UserProgressDao
+    abstract fun userPreferencesDao(): UserPreferencesDao
 
     companion object {
         @Volatile
@@ -60,6 +68,13 @@ abstract class DeciAventurasDatabase : RoomDatabase() {
                 DeciAventurasDatabase::class.java,
                 DATABASE_NAME,
             )
+                // Sube de versión 1 a 2 (se agregó user_preferences). Se usa
+                // migración destructiva porque el proyecto todavía no está
+                // publicado: no hay progreso real de usuarios que proteger.
+                // ANTES de una release pública, esto debe reemplazarse por
+                // una Migration explícita que preserve dilemmas/choices/
+                // user_progress ya guardados.
+                .fallbackToDestructiveMigration()
                 .addCallback(seedCallback(databaseProvider = { database }, scope = scope))
                 .build()
             return database

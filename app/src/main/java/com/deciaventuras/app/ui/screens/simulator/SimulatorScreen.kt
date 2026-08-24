@@ -79,7 +79,12 @@ fun SimulatorScreen(
     val viewModel: SimulatorViewModel = viewModel(
         factory = viewModelFactory {
             initializer {
-                SimulatorViewModel(dilemmaId, container.dilemmaRepository, container.recordChoiceUseCase)
+                SimulatorViewModel(
+                    dilemmaId,
+                    container.dilemmaRepository,
+                    container.recordChoiceUseCase,
+                    container.userPreferencesRepository,
+                )
             }
         },
     )
@@ -142,6 +147,7 @@ fun SimulatorScreen(
                                         dropZoneBounds = { dropZoneBounds },
                                         onDropped = viewModel::onChoiceDropped,
                                         onDragHoverChange = { isDropZoneActive = it },
+                                        hapticsEnabled = uiState.hapticsEnabled,
                                     )
                                 }
                             }
@@ -314,5 +320,3 @@ private fun iconForDilemma(dilemmaId: Int): ImageVector = when (dilemmaId) {
     5 -> Icons.Filled.Backpack
     else -> Icons.Filled.Security
 }
-
-

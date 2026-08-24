@@ -3,6 +3,7 @@ package com.deciaventuras.app.data.repository
 import com.deciaventuras.app.data.local.dao.ChoiceDao
 import com.deciaventuras.app.data.local.dao.DilemmaDao
 import com.deciaventuras.app.data.local.dao.UserProgressDao
+import com.deciaventuras.app.data.local.database.SeedData
 import com.deciaventuras.app.data.local.entity.toDomain
 import com.deciaventuras.app.data.local.entity.toEntity
 import com.deciaventuras.app.domain.model.Choice
@@ -43,5 +44,13 @@ class DilemmaRepositoryImpl(
 
     override suspend fun setDilemmaUnlocked(dilemmaId: Int, isUnlocked: Boolean) {
         dilemmaDao.setUnlocked(dilemmaId, isUnlocked)
+    }
+
+    override suspend fun resetAllProgress() {
+        userProgressDao.deleteAll()
+        // OnConflictStrategy.REPLACE sobrescribe cada fila con los valores
+        // semilla originales (orderIndex 0 desbloqueado, el resto bloqueado,
+        // ninguno completado), sin necesitar una query de "reset" aparte.
+        dilemmaDao.insertAll(SeedData.dilemmas)
     }
 }

@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -44,6 +48,7 @@ import com.deciaventuras.app.ui.components.MapPathConnector
 fun DashboardScreen(
     onNavigateToSimulator: (dilemmaId: Int) -> Unit,
     onNavigateToJournal: () -> Unit,
+    onNavigateToSettings: () -> Unit,
 ) {
     val container = rememberAppContainer()
     val viewModel: DashboardViewModel = viewModel(
@@ -64,7 +69,11 @@ fun DashboardScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            DashboardHeader(completedCount = uiState.completedCount, totalCount = uiState.totalCount)
+            DashboardHeader(
+                completedCount = uiState.completedCount,
+                totalCount = uiState.totalCount,
+                onNavigateToSettings = onNavigateToSettings,
+            )
             AdventureMap(
                 dilemmas = uiState.dilemmas,
                 onNodeClick = { dilemma -> onNavigateToSimulator(dilemma.id) },
@@ -75,23 +84,38 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardHeader(completedCount: Int, totalCount: Int) {
+private fun DashboardHeader(completedCount: Int, totalCount: Int, onNavigateToSettings: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
-        Text(
-            text = "Mapa de Aventuras",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = "Cada camino que eliges revela un nuevo destino.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Mapa de Aventuras",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = "Cada camino que eliges revela un nuevo destino.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = onNavigateToSettings) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Ajustes",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
 
         val progress = if (totalCount == 0) 0f else completedCount.toFloat() / totalCount.toFloat()
         androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(10.dp))
         LinearProgressIndicator(
-            progress = {progress},
+            progress = { progress },
             modifier = Modifier.fillMaxWidth().height(10.dp).clip(RoundedCornerShape(50)),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.primaryContainer,

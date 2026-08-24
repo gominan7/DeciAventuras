@@ -10,7 +10,12 @@ específico en `APP_PROMPT.md`.
 
 ## Estado actual del proyecto
 
-🟢 **Paso 3/7 completado: Drag & Drop real + las 3 pantallas conectadas.**
+🟢 **Paso 4/7: Onboarding + Ajustes agregados sobre una base ya confirmada funcionando.**
+
+El proyecto **compila y corre de verdad**: se probó en GitHub Actions (build
+en verde) y en un dispositivo Android real, incluyendo el Mapa de Aventuras,
+el Simulador con Drag & Drop, y el Diario de Explorador. Ver la sección de
+abajo para el detalle de qué se verificó y qué no.
 
 Lo que existe ya en este repositorio:
 
@@ -28,58 +33,66 @@ Lo que existe ya en este repositorio:
 - Gradle Wrapper 8.7 real (jar/scripts oficiales, no simulados).
 - Workflow de GitHub Actions (`.github/workflows/build.yml`) que compila,
   testea, lintea y publica el APK de depuración en cada push a `main`.
-- **Modelo Room completo**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema,
-  `CASCADE`), `UserProgressEntity` (FK → dilema y decisión, `CASCADE`,
-  historial *append-only*) + sus DAOs y `DeciAventurasDatabase` con
-  `Callback.onCreate` real de precarga.
+- **Modelo Room v2**: `DilemmaEntity`, `ChoiceEntity` (FK → dilema, `CASCADE`),
+  `UserProgressEntity` (FK → dilema y decisión, `CASCADE`, historial
+  *append-only*), y **`UserPreferencesEntity`** nueva (tabla de una sola
+  fila: alias, avatar, vibración, onboarding completado). Migración
+  destructiva documentada (aceptable en esta etapa pre-release, no en producción).
 - **Los 5 dilemas semilla completos**, cada uno con 3 tarjetas de decisión
   reales, espejadas en `database/sample_data.sql`.
 - **Dominio puro y testeable**: `RecordChoiceUseCase` (guarda decisión →
-  completa dilema → desbloquea el siguiente) y `GetJournalUseCase`.
+  completa dilema → desbloquea el siguiente), `GetJournalUseCase`, y
+  **`ResetProgressUseCase`** (coordina borrar progreso + perfil).
 - `AppContainer`: contenedor de dependencias manual, conectado a
   `DeciAventurasApp` y expuesto a Compose vía `rememberAppContainer()`.
-- **Drag & Drop real** (`DraggableChoiceCard.kt`): `detectDragGestures` +
-  `Animatable` para el resorte de retorno, seguimiento de posición vía
-  `onGloballyPositioned`/`boundsInWindow()`, detección de solapamiento con
-  la Brújula, y haptic feedback al soltar con éxito. NO es un botón que
-  cambia texto al tocarlo (Sección 45 del spec maestro).
-- **`CompassDropZone.kt`**: la Brújula ilustrada con Compose Canvas
-  (mismo lenguaje visual que el ícono de launcher), con animación de
-  "brillo" cuando una tarjeta está encima.
-- **Las 3 pantallas completas y conectadas por Navigation Compose**:
-  - `DashboardScreen.kt` — Mapa de Aventuras: camino serpenteante de nodos
-    ilustrados (bloqueado/disponible/completado con iconografía real, no
-    solo color) y progreso derivado de los datos.
-  - `SimulatorScreen.kt` — situación → drag & drop → Impacto Inmediato +
-    Destino Final → insignia ganada → "Guardar en mi Diario y Continuar".
-  - `JournalScreen.kt` — insignias coleccionables + historial de
-    decisiones, con estado vacío ilustrado (no una pantalla en blanco).
-- **ViewModels** (`DashboardViewModel`, `SimulatorViewModel`,
-  `JournalViewModel`) conectados vía `viewModelFactory{}` (sin Hilt/Dagger).
-- **53 tests** (JUnit4 + Truth): 38 unitarios puros en `app/src/test`
-  (dominio, seed data, mappers y ViewModels con `MainDispatcherRule` +
-  `FakeDilemmaRepository`, sin Robolectric) + 15 instrumentados en
-  `app/src/androidTest` sobre Room real en memoria.
+- **Drag & Drop real y verificado en dispositivo** (`DraggableChoiceCard.kt`):
+  `detectDragGestures` + `Animatable` para el resorte de retorno, sin
+  contenedores con scroll horizontal (competían por el gesto — bug real
+  encontrado y corregido), con pista visual animada enseñando la mecánica,
+  y haptic feedback apagable desde Ajustes.
+- **`CompassDropZone.kt`**: la Brújula ilustrada con Compose Canvas, con
+  animación de "brillo" cuando una tarjeta está encima.
+- **Las 5 pantallas completas, conectadas por Navigation Compose**:
+  - `SplashScreen` — decide sin UI visible si mostrar Onboarding o el Mapa.
+  - `OnboardingScreen` — 3 páginas: bienvenida, cómo se juega, perfil (alias + avatar).
+  - `DashboardScreen` — Mapa de Aventuras: camino serpenteante de nodos con
+    estado real y progreso derivado de los datos; ícono de Ajustes en el header.
+  - `SimulatorScreen` — situación → drag & drop → Impacto Inmediato +
+    Destino Final → insignia ganada.
+  - `JournalScreen` — insignias coleccionables + historial, estado vacío ilustrado.
+  - `SettingsScreen` — vibración (real) + reiniciar todo el progreso (con
+    confirmación). Se dejó afuera a propósito un toggle de "sonido de
+    efectos": la app no reproduce audio todavía, ese control sería decorativo.
+- **ViewModels** conectados vía `viewModelFactory{}` (sin Hilt/Dagger).
+- **60 tests** (JUnit4 + Truth): 41 unitarios (dominio, seed data, mappers,
+  ViewModels, `ResetProgressUseCase`, con `MainDispatcherRule` +
+  `FakeDilemmaRepository`/`FakeUserPreferencesRepository`, sin Robolectric)
+  + 19 instrumentados sobre Room real en memoria.
 
-Lo que **todavía no existe** (siguientes pasos, según `APP_PROMPT.md` §6):
+Lo que **todavía no existe**:
 
-- [ ] Ilustraciones/insignias adicionales más elaboradas (Compose Canvas).
-- [ ] Pantallas de onboarding (máximo 3-4, Sección 16 del spec maestro).
-- [ ] Documentación (`docs/MEMORIA_DESCRIPTIVA.md`, manuales, `BUILD_REPORT.md`).
-- [ ] Verificación de compilación real (requiere entorno con acceso a
-      `dl.google.com` / Maven Central / `services.gradle.org`).
+- [ ] Documentación (`docs/MEMORIA_DESCRIPTIVA.md`, manuales, `BUILD_REPORT.md`) — siguiente paso.
+- [ ] Verificación en dispositivo real de ESTA tanda (Onboarding/Ajustes):
+      pasó la misma auditoría manual que el resto, pero todavía no se probó
+      corriendo, a diferencia del Mapa/Simulador/Diario que sí están confirmados.
 
-## ⚠️ Compilación: NO VERIFICADA en este entorno
+## ⚠️ Compilación: verificada en GitHub Actions y dispositivo real (con una salvedad)
 
-Siguiendo la Sección 37 de la Especificación Maestra ("Honestidad"), se deja
-constancia explícita de que **no se pudo ejecutar `./gradlew` en el entorno
-de generación de este proyecto**, porque el sandbox no tiene salida de red
-hacia `services.gradle.org` ni hacia los repositorios Maven de Google/Android
-(`dl.google.com`) o Maven Central, necesarios para descargar la distribución
-de Gradle y las dependencias declaradas.
+Este proyecto se generó originalmente en un sandbox sin salida de red hacia
+`services.gradle.org` / `dl.google.com` / Maven Central, así que no pudo
+compilarse ahí. Eso ya no aplica al estado actual: **el usuario compiló y
+corrió la app real** vía GitHub Actions (workflow en verde) e instalación
+directa en un celular Android, y encontramos y corregimos 2 bugs reales en
+el proceso (un XML sin cerrar, y un conflicto de gestos entre scroll y
+drag & drop) — quedó documentado como aprendizaje de que ninguna revisión
+manual de código reemplaza probarlo de verdad.
 
-No se ha simulado ningún resultado de build. Para verificar la compilación
-real, en una máquina con acceso normal a Internet:
+**Salvedad honesta**: el onboarding y Ajustes (Paso 4) pasaron la misma
+auditoría manual exhaustiva de siempre (balance de llaves/paréntesis, rutas
+de `package`, imports, XML), pero **todavía no se corrieron en un
+dispositivo real** al momento de escribir esto. Si al compilarlos aparece
+algún error, es información valiosa: mandalo tal cual (captura del log de
+Build) para corregirlo.
 
 ```bash
 ./gradlew clean
@@ -88,8 +101,8 @@ real, en una máquina con acceso normal a Internet:
 ./gradlew assembleDebug
 ```
 
-o simplemente haz `git push` a `main`: el workflow en `.github/workflows/build.yml`
-lo compilará en GitHub Actions y publicará el APK como artefacto descargable.
+o simplemente `git push` a `main`: el workflow en `.github/workflows/build.yml`
+compila en GitHub Actions y publica el APK como artefacto descargable.
 
 ## Estructura del repositorio
 
@@ -99,26 +112,28 @@ DeciAventuras/
 │   └── src/
 │       ├── main/java/com/deciaventuras/app/
 │       │   ├── data/
-│       │   │   ├── local/entity/      (DilemmaEntity, ChoiceEntity, UserProgressEntity) ✅
-│       │   │   ├── local/dao/         (DilemmaDao, ChoiceDao, UserProgressDao) ✅
-│       │   │   ├── local/database/    (DeciAventurasDatabase + SeedData) ✅
-│       │   │   └── repository/        (DilemmaRepositoryImpl) ✅
+│       │   │   ├── local/entity/      (Dilemma, Choice, UserProgress, UserPreferences) ✅
+│       │   │   ├── local/dao/         (DilemmaDao, ChoiceDao, UserProgressDao, UserPreferencesDao) ✅
+│       │   │   ├── local/database/    (DeciAventurasDatabase v2 + SeedData) ✅
+│       │   │   └── repository/        (DilemmaRepositoryImpl, UserPreferencesRepositoryImpl) ✅
 │       │   ├── domain/
-│       │   │   ├── model/             (Dilemma, Choice, UserProgress, JournalEntry) ✅
-│       │   │   ├── repository/        (DilemmaRepository, interfaz) ✅
-│       │   │   └── usecase/           (RecordChoiceUseCase, GetJournalUseCase) ✅
+│       │   │   ├── model/             (Dilemma, Choice, UserProgress, JournalEntry, UserPreferences) ✅
+│       │   │   ├── repository/        (DilemmaRepository, UserPreferencesRepository) ✅
+│       │   │   └── usecase/           (RecordChoiceUseCase, GetJournalUseCase, ResetProgressUseCase) ✅
 │       │   ├── ui/
 │       │   │   ├── theme/             (Color, Type, Theme) ✅
-│       │   │   ├── navigation/        (Routes, DeciAventurasNavHost) ✅
+│       │   │   ├── navigation/        (Routes, DeciAventurasNavHost, SplashScreen) ✅
 │       │   │   ├── components/        (DraggableChoiceCard, CompassDropZone,
 │       │   │   │                        DilemmaMapNode, ExplorerBadge, BottomBar) ✅
 │       │   │   └── screens/
+│       │   │       ├── onboarding/    (OnboardingScreen + ViewModel) ✅
 │       │   │       ├── dashboard/     (DashboardScreen + ViewModel) ✅
 │       │   │       ├── simulator/     (SimulatorScreen + ViewModel) ✅
-│       │   │       └── journal/       (JournalScreen + ViewModel) ✅
+│       │   │       ├── journal/       (JournalScreen + ViewModel) ✅
+│       │   │       └── settings/      (SettingsScreen + ViewModel) ✅
 │       │   └── di/                    (AppContainer + acceso desde Compose) ✅
-│       ├── test/java/...              (38 tests unitarios: dominio, seed, mappers, ViewModels) ✅
-│       └── androidTest/java/...       (15 tests instrumentados: Room real) ✅
+│       ├── test/java/...              (41 tests unitarios: dominio, seed, mappers, ViewModels) ✅
+│       └── androidTest/java/...       (19 tests instrumentados: Room real) ✅
 ├── database/
 │   ├── schema.sql          ✅
 │   └── sample_data.sql     ✅

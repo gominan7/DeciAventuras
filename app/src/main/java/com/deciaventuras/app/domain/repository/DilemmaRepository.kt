@@ -36,4 +36,11 @@ interface DilemmaRepository {
     suspend fun setDilemmaCompleted(dilemmaId: Int, isCompleted: Boolean)
 
     suspend fun setDilemmaUnlocked(dilemmaId: Int, isUnlocked: Boolean)
+
+    /**
+     * Borra todo el historial de decisiones y vuelve los 5 dilemas a su
+     * estado inicial (solo el primero desbloqueado, ninguno completado).
+     * Usado únicamente desde "Reiniciar todo el progreso" en Ajustes.
+     */
+    suspend fun resetAllProgress()
 }

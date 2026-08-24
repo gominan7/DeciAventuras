@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.deciaventuras.app.domain.model.Choice
 import com.deciaventuras.app.domain.model.Dilemma
 import com.deciaventuras.app.domain.repository.DilemmaRepository
+import com.deciaventuras.app.domain.repository.UserPreferencesRepository
 import com.deciaventuras.app.domain.usecase.RecordChoiceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ data class SimulatorUiState(
     /** No nulo únicamente cuando ya se soltó una tarjeta: dispara la vista de consecuencias. */
     val resultChoice: Choice? = null,
     val isLoading: Boolean = true,
+    val hapticsEnabled: Boolean = true,
 ) {
     val isShowingResult: Boolean get() = resultChoice != null
 }
@@ -31,6 +33,7 @@ class SimulatorViewModel(
     private val dilemmaId: Int,
     private val repository: DilemmaRepository,
     private val recordChoiceUseCase: RecordChoiceUseCase,
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SimulatorUiState())
@@ -39,13 +42,17 @@ class SimulatorViewModel(
     init {
         viewModelScope.launch {
             val dilemma = repository.getDilemma(dilemmaId)
-            val choices = repository.observeChoices(dilemmaId)
-            choices.collect { choiceList ->
+            repository.observeChoices(dilemmaId).collect { choiceList ->
                 _uiState.value = _uiState.value.copy(
                     dilemma = dilemma,
                     choices = choiceList.sortedBy { it.orderIndex },
                     isLoading = false,
                 )
+            }
+        }
+        viewModelScope.launch {
+            userPreferencesRepository.observePreferences().collect { prefs ->
+                _uiState.value = _uiState.value.copy(hapticsEnabled = prefs.hapticsEnabled)
             }
         }
     }

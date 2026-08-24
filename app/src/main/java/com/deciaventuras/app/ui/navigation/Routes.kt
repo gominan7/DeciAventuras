@@ -1,12 +1,16 @@
 package com.deciaventuras.app.ui.navigation
 
 /**
- * Las 3 pantallas principales de DeciAventuras (APP_PROMPT.md §3).
- * `Simulator` recibe el id del dilema elegido en el mapa como argumento de ruta.
+ * Las pantallas de DeciAventuras. `Splash` decide, sin mostrar nada visible
+ * más que el fondo, si el explorador ya completó el onboarding o no, y
+ * navega en consecuencia (Sección 16 del spec maestro).
  */
 sealed class Routes(val route: String) {
+    data object Splash : Routes("splash")
+    data object Onboarding : Routes("onboarding")
     data object Dashboard : Routes("dashboard")
     data object Journal : Routes("journal")
+    data object Settings : Routes("settings")
 
     data object Simulator : Routes("simulator/{dilemmaId}") {
         const val ARG_DILEMMA_ID = "dilemmaId"

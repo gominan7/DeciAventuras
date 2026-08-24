@@ -2,6 +2,7 @@ package com.deciaventuras.app.ui.screens.simulator
 
 import com.deciaventuras.app.domain.usecase.RecordChoiceUseCase
 import com.deciaventuras.app.fake.FakeDilemmaRepository
+import com.deciaventuras.app.fake.FakeUserPreferencesRepository
 import com.deciaventuras.app.util.MainDispatcherRule
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
@@ -18,7 +19,7 @@ class SimulatorViewModelTest {
     fun `el estado inicial carga el dilema y sus 3 tarjetas de decision`() = runTest {
         val repository = FakeDilemmaRepository()
         val recordChoice = RecordChoiceUseCase(repository)
-        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice)
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
 
         val state = viewModel.uiState.value
 
@@ -32,7 +33,7 @@ class SimulatorViewModelTest {
     fun `soltar una tarjeta en la brujula muestra el resultado y persiste la decision`() = runTest {
         val repository = FakeDilemmaRepository()
         val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
-        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice)
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
         val chosen = viewModel.uiState.value.choices.first { it.id == 2 }
 
         viewModel.onChoiceDropped(chosen)
@@ -50,7 +51,7 @@ class SimulatorViewModelTest {
         // Caso límite (Sección 29 del spec maestro): doble toque.
         val repository = FakeDilemmaRepository()
         val recordChoice = RecordChoiceUseCase(repository) { 1_000L }
-        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice)
+        val viewModel = SimulatorViewModel(dilemmaId = 1, repository, recordChoice, FakeUserPreferencesRepository())
         val choices = viewModel.uiState.value.choices
         val first = choices.first { it.id == 1 }
         val second = choices.first { it.id == 2 }

@@ -2,6 +2,7 @@ package com.deciaventuras.app.data.local.entity
 
 import com.deciaventuras.app.domain.model.Choice
 import com.deciaventuras.app.domain.model.Dilemma
+import com.deciaventuras.app.domain.model.UserPreferences
 import com.deciaventuras.app.domain.model.UserProgress
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -53,6 +54,20 @@ class EntityMappingTest {
             dilemmaId = 2,
             chosenChoiceId = 6,
             timestampMillis = 1_700_000_000_000,
+        )
+
+        val roundTripped = original.toEntity().toDomain()
+
+        assertThat(roundTripped).isEqualTo(original)
+    }
+
+    @Test
+    fun `UserPreferences sobrevive el viaje de ida y vuelta a Entity`() {
+        val original = UserPreferences(
+            alias = "Explorador07",
+            avatarIndex = 5,
+            hapticsEnabled = false,
+            onboardingCompleted = true,
         )
 
         val roundTripped = original.toEntity().toDomain()

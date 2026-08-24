@@ -21,6 +21,7 @@ class FakeDilemmaRepository(
     seedChoices: List<Choice> = SeedData.choices.map { it.toDomain() },
 ) : DilemmaRepository {
 
+    private val originalSeedDilemmas: List<Dilemma> = seedDilemmas
     private val dilemmasFlow = MutableStateFlow(seedDilemmas)
     private val choicesById: MutableMap<Int, Choice> = seedChoices.associateBy { it.id }.toMutableMap()
     private val choicesByDilemma: Map<Int, List<Choice>> = seedChoices.groupBy { it.dilemmaId }
@@ -54,5 +55,10 @@ class FakeDilemmaRepository(
         dilemmasFlow.value = dilemmasFlow.value.map {
             if (it.id == dilemmaId) it.copy(isUnlocked = isUnlocked) else it
         }
+    }
+
+    override suspend fun resetAllProgress() {
+        progressFlow.value = emptyList()
+        dilemmasFlow.value = originalSeedDilemmas
     }
 }

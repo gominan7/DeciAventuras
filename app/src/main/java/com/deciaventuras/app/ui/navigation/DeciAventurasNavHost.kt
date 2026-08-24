@@ -9,16 +9,44 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.deciaventuras.app.ui.screens.dashboard.DashboardScreen
 import com.deciaventuras.app.ui.screens.journal.JournalScreen
+import com.deciaventuras.app.ui.screens.onboarding.OnboardingScreen
+import com.deciaventuras.app.ui.screens.settings.SettingsScreen
 import com.deciaventuras.app.ui.screens.simulator.SimulatorScreen
 
 /**
- * Une las 3 pantallas principales de DeciAventuras (APP_PROMPT.md §3) con
- * Navigation Compose. El Mapa es el destino de inicio; el Simulador recibe
- * el id del dilema elegido como argumento de ruta tipado.
+ * Une todas las pantallas de DeciAventuras con Navigation Compose.
+ * `Splash` es el punto de entrada real: decide sin mostrar nada visible más
+ * que el fondo si hay que mostrar el Onboarding (primera vez) o ir directo
+ * al Mapa de Aventuras (Sección 16 del spec maestro).
  */
 @Composable
 fun DeciAventurasNavHost(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = Routes.Dashboard.route) {
+    NavHost(navController = navController, startDestination = Routes.Splash.route) {
+        composable(Routes.Splash.route) {
+            SplashScreen(
+                onOnboardingCompleted = {
+                    navController.navigate(Routes.Dashboard.route) {
+                        popUpTo(Routes.Splash.route) { inclusive = true }
+                    }
+                },
+                onOnboardingRequired = {
+                    navController.navigate(Routes.Onboarding.route) {
+                        popUpTo(Routes.Splash.route) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(Routes.Onboarding.route) {
+            OnboardingScreen(
+                onFinished = {
+                    navController.navigate(Routes.Dashboard.route) {
+                        popUpTo(Routes.Onboarding.route) { inclusive = true }
+                    }
+                },
+            )
+        }
+
         composable(Routes.Dashboard.route) {
             DashboardScreen(
                 onNavigateToSimulator = { dilemmaId ->
@@ -28,6 +56,9 @@ fun DeciAventurasNavHost(navController: NavHostController = rememberNavControlle
                     navController.navigate(Routes.Journal.route) {
                         launchSingleTop = true
                     }
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Routes.Settings.route)
                 },
             )
         }
@@ -49,6 +80,19 @@ fun DeciAventurasNavHost(navController: NavHostController = rememberNavControlle
                     navController.navigate(Routes.Dashboard.route) {
                         popUpTo(Routes.Dashboard.route) { inclusive = true }
                         launchSingleTop = true
+                    }
+                },
+            )
+        }
+
+        composable(Routes.Settings.route) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onProgressReset = {
+                    // El progreso y el perfil se borraron: hay que volver a
+                    // pasar por el Onboarding, no solo por el Mapa.
+                    navController.navigate(Routes.Onboarding.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
             )
