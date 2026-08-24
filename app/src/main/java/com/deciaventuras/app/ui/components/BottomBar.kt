@@ -1,8 +1,8 @@
 package com.deciaventuras.app.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,13 +23,13 @@ fun DeciAventurasBottomBar(
         NavigationBarItem(
             selected = selectedTab == DeciAventurasTab.MAP,
             onClick = onSelectMap,
-            icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null) },
+            icon = { Icon(Icons.Filled.Explore, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_map)) },
         )
         NavigationBarItem(
             selected = selectedTab == DeciAventurasTab.JOURNAL,
             onClick = onSelectJournal,
-            icon = { Icon(Icons.Filled.MenuBook, contentDescription = null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_journal)) },
         )
     }
