@@ -105,7 +105,7 @@ fun DraggableChoiceCard(
             },
     ) {
         Card(
-            modifier = Modifier.widthIn(min = 140.dp, max = 190.dp),
+            modifier = Modifier.widthIn(min = 130.dp, max = 160.dp),
             shape = RoundedCornerShape(18.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -127,3 +127,4 @@ fun DraggableChoiceCard(
         }
     }
 }
+
